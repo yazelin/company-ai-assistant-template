@@ -1,3 +1,5 @@
+![Brand banner](assets/banner.svg)
+
 # Company AI Assistant Template
 
 Build an internal document Q&A assistant before adding vector DB complexity.
@@ -35,3 +37,11 @@ This repo is also a CTA page for workshops and consulting:
 ## License
 
 MIT
+
+
+## Brand / CTA design
+
+- Landing page: https://yazelin.github.io/company-ai-assistant-template/
+- CI spec: [DESIGN.md](DESIGN.md)
+- Banner: [assets/banner.svg](assets/banner.svg)
+- Logo: [assets/logo.svg](assets/logo.svg)
