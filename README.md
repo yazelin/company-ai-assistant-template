@@ -4,6 +4,15 @@
 
 Build an internal document Q&A assistant before adding vector DB complexity.
 
+## 繁中定位
+
+**企業內部 AI 助理模板** 面向台灣繁中受眾。
+
+- 主要受眾：適合想先驗證內部文件問答、SOP 查詢、知識庫助理的中小企業與工程團隊。
+- 核心承諾：先用 SQLite + keyword retrieval 做出可展示的內部文件 AI 助理，再逐步升級成 RAG。
+- CTA 頁：https://yazelin.github.io/company-ai-assistant-template/
+
+
 ## Who this is for
 
 Small teams and companies that want a private AI knowledge assistant.
