@@ -11,70 +11,75 @@
 </ul>
 <h3>建議學習方式</h3>
 <ol>
-<li>先照 `01-quickstart.md` 跑起來。</li>
-<li>再看 `02-architecture.md` 理解每個檔案負責什麼。</li>
-<li>照 `03-step-by-step.md` 做一次完整流程。</li>
-<li>準備部署時看 `04-deployment.md`。</li>
-<li>卡住時先查 `05-common-pitfalls.md`。</li>
-<li>想改成自己的場景，看 `06-customize-for-your-use-case.md`。</li>
-</ol>
-<h3>免費與付費怎麼分</h3>
-<p>這個 repo 會公開最小可跑版本與完整操作步驟。真正適合工作坊或顧問的部分，是陪你 debug、改成你的情境、處理部署與實務安全邊界。</p>
-<ul>
-<li>免費：可重現的 starter、教學文件、基本部署方向。</li>
-<li>付費工作坊：手把手解問題、看你的程式與設定、一起改成你的使用場景。</li>
-<li>企業顧問：需求訪談、PoC、部署、權限、安全與維運規劃。</li>
-</ul></section><section><h2>企業內部 AI 助理模板：快速開始</h2>
+<li>先照 <code>01-quickstart.md</code> 跑起來。</li>
+<li>再看 <code>02-architecture.md</code> 理解每個檔案負責什麼。</li>
+<li>照 <code>03-step-by-step.md</code> 做一次完整流程。</li>
+<li>準備部署時看 <code>04-deployment.md</code>。</li>
+<li>卡住時先查 <code>05-common-pitfalls.md</code>。</li>
+<li>想改成自己的場景，看 <code>06-customize-for-your-use-case.md</code>。</li>
+</ol></section><section><h2>企業內部 AI 助理模板：快速開始</h2>
+<p>這份文件帶你從 clone 到「打 /ask 拿到答案」走完一遍。每一步都附上「實際指令 → 真實輸出 → 成功的話你會看到」。輸出都是本機真的跑出來貼上的。</p>
 <h3>前置需求</h3>
 <ul>
-<li>Python 3.10+</li>
+<li>Python 3.10+（本文用 3.12.3 驗證）</li>
 <li>Git</li>
-<li>可以使用終端機</li>
-<li>如果要接真實 AI 或平台 token，請準備對應帳號與 API key。</li>
+<li>可以使用終端機（會用到 <code>curl</code>）</li>
+<li>之後若要接真實 LLM，再準備 OpenAI 相容的 endpoint 與 API key。第一輪用內建 echo provider，不需要任何金鑰。</li>
 </ul>
-<h3>最短路徑</h3>
-<ol>
-<li>把 Markdown / txt 文件放進 sample_docs 或指定資料夾</li>
-<li>執行 ingest 匯入 SQLite</li>
-<li>啟動 FastAPI /ask endpoint</li>
-<li>先用 echo provider 看檢索結果，再接 LLM</li>
-</ol>
-<h3>安裝與啟動</h3>
-<pre><code>
-git clone https://github.com/yazelin/company-ai-assistant-template.git
-
+<h3>這個 starter 在做什麼（一句話）</h3>
+<p>把 <code>sample_docs/</code> 裡的 .md / .txt 索引進一個 SQLite 檔（<code>assistant.db</code>），然後 POST /ask 時用「關鍵字計次」找出最相關的片段，組成 context 回給你。</p>
+<p>注意：<code>assistant.db</code> 沒有放進 repo（已被 <code>.gitignore</code> 忽略）。它是你第一步 ingest 時自己產生的，所以下面 ingest 那步如果沒跑，後面查詢一定是空的。</p>
+<h3>步驟 1：安裝</h3>
+<pre><code>git clone https://github.com/yazelin/company-ai-assistant-template.git
 cd company-ai-assistant-template
-
 python -m venv .venv
-
 source .venv/bin/activate
-
 pip install -r requirements.txt
-
-cp .env.example .env
-
-python -m app.ingest sample_docs
-
-uvicorn app.main:app --reload --port 8000
-
-</code></pre>
-<h3>健康檢查</h3>
-<pre><code>
-curl http://127.0.0.1:8000/health
-
-</code></pre>
-<h3>常用入口</h3>
-<ul>
-<li>GET /health：健康檢查</li>
-<li>POST /ask：送出 question，回傳 answer 與 sources</li>
-</ul>
-<h3>第一次成功的標準</h3>
-<ul>
-<li>服務能啟動</li>
-<li>基本 endpoint 有回應</li>
-<li>範例流程能跑通</li>
-<li>秘密 token 沒有 commit 到 GitHub</li>
-</ul></section><section><h2>企業內部 AI 助理模板：架構說明</h2>
+cp .env.example .env</code></pre>
+<p><code>.env.example</code> 預設就是 <code>AI_PROVIDER=echo</code>，複製過去即可，先不用改。</p>
+<h3>步驟 2：把文件索引進 SQLite（這一步會「生出」assistant.db）</h3>
+<pre><code>python -m app.ingest sample_docs</code></pre>
+<p>真實輸出：</p>
+<pre><code>ingested sample_docs/overview.md</code></pre>
+<p>成功的話你會看到印出 <code>ingested ...</code> 一行，而且資料夾下多出一個 <code>assistant.db</code> 檔（約 12K）。跳過這步的話，後面查詢的 sources 會永遠是空的。</p>
+<h3>步驟 3：啟動服務</h3>
+<pre><code>uvicorn app.main:app --reload --port 8000</code></pre>
+<p>成功的話終端機會停在 <code>Uvicorn running on http://127.0.0.1:8000</code> 與 <code>Application startup complete.</code>。請另開一個終端機做下面的測試。</p>
+<h3>步驟 4：健康檢查</h3>
+<pre><code>curl http://127.0.0.1:8000/health</code></pre>
+<p>真實輸出：</p>
+<pre><code>{"ok":true}</code></pre>
+<h3>步驟 5：問一個有命中的問題</h3>
+<pre><code>curl -X POST http://127.0.0.1:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What documents does this assistant index?"}'</code></pre>
+<p>真實輸出（為了好讀有換行，實際是一行）：</p>
+<pre><code>{
+  "answer": "Echo answer. Retrieved context:\n[sample_docs/overview.md]\n# Company AI Assistant Template\n\nIndexes internal Markdown/text documents and answers with retrieved context.\n",
+  "sources": [
+    {
+      "score": 2,
+      "path": "sample_docs/overview.md",
+      "snippet": "# Company AI Assistant Template\n\nIndexes internal Markdown/text documents and answers with retrieved context.\n"
+    }
+  ]
+}</code></pre>
+<p>成功的話 sources 陣列裡有東西，path 指到 <code>sample_docs/overview.md</code>。answer 開頭是 <code>Echo answer.</code>，因為現在是 echo provider，它只是把檢索到的 context 原樣回給你，還沒有真的呼叫 LLM。這是預期行為。</p>
+<h3>步驟 6：問一個沒命中的問題</h3>
+<pre><code>curl -X POST http://127.0.0.1:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"zzzzzz nonexistent topic"}'</code></pre>
+<p>真實輸出：</p>
+<pre><code>{"answer":"Echo answer. Retrieved context:\nNo matching docs.","sources":[]}</code></pre>
+<p>成功的話 sources 是空陣列 []，answer 是 No matching docs.。代表檢索正常運作，只是這個問題在你目前的文件裡找不到關鍵字。</p>
+<h3>看看錯誤長什麼樣</h3>
+<p>不存在的路徑（404）：<code>curl http://127.0.0.1:8000/asdf</code></p>
+<pre><code>{"detail":"Not Found"}</code></pre>
+<p>打 /ask 但忘了帶 question 欄位（422 驗證錯誤）：</p>
+<pre><code>{"detail":[{"type":"missing","loc":["body","question"],"msg":"Field required","input":{}}]}</code></pre>
+<p>422 不是壞掉，是 request body 少了必填欄位。</p>
+<h3>整體 OK 的判斷標準</h3>
+<p>/health 回 {"ok":true}、有命中的問題回得到非空 sources、沒命中的問題回 "sources":[]，就代表這個 starter 在你機器上完整跑通了。</p></section><section><h2>企業內部 AI 助理模板：架構說明</h2>
 <h3>核心檔案</h3>
 <ul>
 <li>app/ingest.py：讀取 .md / .txt 並寫入 SQLite documents table</li>
@@ -85,11 +90,11 @@ curl http://127.0.0.1:8000/health
 </ul>
 <h3>資料流</h3>
 <ol>
-<li>使用者或 client 發出請求。</li>
-<li>FastAPI / stdio 入口接收資料。</li>
-<li>handler 解析訊息與設定。</li>
-<li>adapter / tool / search 層執行實際工作。</li>
-<li>回傳最小可理解的結果。</li>
+<li>client 發出 POST /ask 請求。</li>
+<li>FastAPI 接收並用 Pydantic 驗證 question 欄位。</li>
+<li>search_docs 對 SQLite 做關鍵字計次檢索。</li>
+<li>ai.answer 把片段組成 context，交給 echo 或 HTTP LLM。</li>
+<li>回傳 answer 與 sources。</li>
 </ol>
 <h3>設計原則</h3>
 <ul>
@@ -97,40 +102,73 @@ curl http://127.0.0.1:8000/health
 <li>token 與 secrets 全部放在環境變數。</li>
 <li>每一層保持可以替換：入口、AI provider、資料來源、部署方式。</li>
 <li>範例程式刻意保持小，方便你看懂後改成自己的版本。</li>
-</ul></section><section><h2>企業內部 AI 助理模板：完整操作流程</h2>
-<h3>步驟</h3>
-<ol>
-<li>先用 sample_docs 跑一次 ingest，建立 assistant.db。</li>
-<li>呼叫 /ask，確認 sources 有出現相關文件。</li>
-<li>把自己的 SOP / FAQ / 產品文件放進資料夾後重新 ingest。</li>
-<li>先用 AI_PROVIDER=echo 檢查檢索品質。</li>
-<li>再設定 HTTP_LLM_ENDPOINT 與 API key，讓模型根據 sources 回答。</li>
-<li>整理哪些問題答不好，決定是否升級 chunking、向量搜尋、權限控管。</li>
-</ol>
-<h3>建議紀錄</h3>
+</ul></section><section><h2>企業內部 AI 助理模板：帶你走一遍</h2>
+<p>quickstart 讓服務跑起來。這份文件帶你做兩件真正有價值的事：把「你自己的文件」加進去並證明它被檢索到（含真實 before / after），以及從 echo 換成真實 HTTP LLM。下面的輸出都是本機真的跑出來貼上的。</p>
+<h3>第一部分：加一份自己的文件，看它被檢索到</h3>
+<p><strong>Before</strong>：目前只有 overview.md，先問一個沒有的主題：</p>
+<pre><code>curl -X POST http://127.0.0.1:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"refund window thirty days"}'</code></pre>
+<p>真實輸出（sources 是空的）：</p>
+<pre><code>{"answer":"Echo answer. Retrieved context:\nNo matching docs.","sources":[]}</code></pre>
+<p><strong>動作</strong>：在 <code>sample_docs/</code> 新增 <code>refund-policy.md</code>：</p>
+<pre><code># Refund Policy
+
+Customers may request a refund within a thirty day window after purchase.
+Approved refunds are returned to the original payment method.</code></pre>
+<p><strong>重新 ingest</strong>（改完文件一定要重跑，否則 SQLite 裡還是舊內容）：</p>
+<pre><code>python -m app.ingest sample_docs</code></pre>
+<p>真實輸出（多了一行新檔案）：</p>
+<pre><code>ingested sample_docs/overview.md
+ingested sample_docs/refund-policy.md</code></pre>
+<p><strong>After</strong>：問同一個問題，真實輸出：</p>
+<pre><code>{
+  "answer": "Echo answer. Retrieved context:\n[sample_docs/refund-policy.md]\n# Refund Policy\n...",
+  "sources": [
+    {
+      "score": 5,
+      "path": "sample_docs/refund-policy.md",
+      "snippet": "# Refund Policy\n\nCustomers may request a refund within a thirty day window after purchase.\nApproved refunds are returned to the original payment method.\n"
+    }
+  ]
+}</code></pre>
+<p>同一個問題，sources 從 [] 變成命中 <code>sample_docs/refund-policy.md</code>，score 是 5。這就是「加文件 → 重新 ingest → 被檢索到」的完整證明。</p>
+<p>提醒：這個 starter 的檢索是「關鍵字 / 子字串計次」（看 app/search.py），不是語意檢索。中文「退費」不會自動對應英文 refund，同義詞也命中不到。這是個誠實的 keyword retrieval baseline。</p>
+<h3>第二部分：從 echo 換成真實 HTTP LLM</h3>
+<p>把 <code>.env</code> 的 <code>AI_PROVIDER</code> 從 <code>echo</code> 改成 <code>http</code>，並填入 <code>HTTP_LLM_API_KEY</code>：</p>
+<pre><code>AI_PROVIDER=http
+HTTP_LLM_ENDPOINT=https://api.openai.com/v1/chat/completions
+HTTP_LLM_API_KEY=sk-你的金鑰
+MODEL_NAME=gpt-4o-mini</code></pre>
+<p>app/ai.py 的邏輯：只要 AI_PROVIDER 不是 echo，就用 httpx 對 HTTP_LLM_ENDPOINT 發一個 OpenAI 相容的 chat completions 請求，把檢索片段塞進 prompt，回傳 choices[0].message.content。endpoint 不限 OpenAI，任何 OpenAI 相容介面都行（vLLM、Ollama 的相容層、Groq 等）。</p>
+<p>這一步需要你自己的金鑰才能真的拿到模型回應，所以這裡不貼造假的 LLM 回應。設好你的 HTTP_LLM_API_KEY 後，重啟 uvicorn 再打同一個 /ask，你會看到 answer 不再是 "Echo answer..."，而是模型根據 sources 寫出的自然語言回答；sources 欄位仍照舊回傳。金鑰沒設好或無效時 /ask 會回 500，錯誤訊息見踩雷清單。</p>
+<h3>動手練習：在 /ask 回應多加一個 source_count 欄位</h3>
+<p>目標：讓 /ask 除了 answer / sources，再回一個「命中幾份文件」的數字。這個練習我實際做過、驗證有效，下面是真實結果。</p>
+<p>改 app/main.py，在回傳 dict 多一個 source_count：</p>
+<pre><code>return {"answer":await answer(req.question,docs),"sources":docs,"source_count":len(docs)}</code></pre>
+<p>驗證真實輸出（有命中）：</p>
+<pre><code>{"answer":"Echo answer. Retrieved context:\n[sample_docs/refund-policy.md]\n...","sources":[{"score":5,"path":"sample_docs/refund-policy.md","snippet":"..."}],"source_count":1}</code></pre>
+<p>沒命中：</p>
+<pre><code>{"answer":"Echo answer. Retrieved context:\nNo matching docs.","sources":[],"source_count":0}</code></pre>
+<p>成功的話回應尾巴多了 "source_count":1（命中一份）和 "source_count":0（沒命中）。一個三個字的修改就讓 API 多回一個有用欄位，這就是這個 starter 刻意保持小的好處。</p>
+<h3>升級路徑</h3>
 <ul>
-<li>你使用的 Python 版本</li>
-<li>啟動指令</li>
-<li>`.env` 裡有哪些 key 已設定；不要貼出 secret 值</li>
-<li>webhook / endpoint URL</li>
-<li>錯誤訊息完整內容</li>
-<li>你預期發生什麼、實際發生什麼</li>
-</ul>
-<h3>下一個里程碑</h3>
-<p>完成最小流程後，不要急著加功能。先找一個真實情境，讓這個 starter 解決一個很小但明確的問題。</p></section><section><h2>企業內部 AI 助理模板：部署筆記</h2>
+<li>檢索：keyword 計次 → chunking → embedding 向量檢索 → hybrid。這是「baseline → RAG」真正的那段。</li>
+<li>中文 / 同義詞：keyword baseline 不處理，要在 ingest 做正規化或直接上 embedding。</li>
+<li>權限：目前任何人打 /ask 都能讀全部文件，正式版要加登入與依部門分群。</li>
+<li>資料治理：insert or replace 不處理刪除與版本，正式版要補。</li>
+</ul></section><section><h2>企業內部 AI 助理模板：部署筆記</h2>
 <h3>部署前檢查</h3>
 <ul>
 <li>本機流程已經跑通。</li>
-<li>`.env` 沒有被 commit。</li>
+<li><code>.env</code> 沒有被 commit。</li>
 <li>README 的啟動指令與實際程式一致。</li>
-<li>`/health` 或等價檢查 endpoint 可用。</li>
-<li>外部服務 token 已放在部署平台 secrets。</li>
+<li>/health 可用。</li>
+<li>外部 LLM 的 HTTP_LLM_API_KEY 已放在部署平台 secrets，而不是寫死在程式或 commit。</li>
+<li>部署目標上有跑過一次 ingest（assistant.db 是執行時產生的，不在 repo 裡）。</li>
 </ul>
 <h3>啟動指令</h3>
-<pre><code>
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-
-</code></pre>
+<pre><code>uvicorn app.main:app --host 0.0.0.0 --port 8000</code></pre>
 <h3>常見部署選項</h3>
 <ul>
 <li>Render / Railway / Fly.io：適合快速 demo。</li>
@@ -139,38 +177,30 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 <li>NAS / edge gateway：適合工業或內部自動化場景。</li>
 </ul>
 <h3>部署後驗證</h3>
-<pre><code>
-curl http://127.0.0.1:8000/health
-
-</code></pre>
-<p>接著再測真正的業務流程，不要只看服務有沒有啟動。</p>
+<pre><code>curl http://127.0.0.1:8000/health</code></pre>
+<p>接著打一個有命中的 /ask 確認 sources 非空，不要只看服務有沒有啟動。</p>
 <h3>實務提醒</h3>
 <p>部署不是最後一步。正式使用前至少要補：log、錯誤告警、權限控管、備份策略、secret rotation，以及基本監控。</p></section><section><h2>企業內部 AI 助理模板：常見問題與踩雷清單</h2>
-<h3>常見坑</h3>
-<ul>
-<li>不要一開始就導入複雜向量資料庫；先確認文件品質與問題場景。</li>
-<li>keyword retrieval 對同義詞較弱，這是 baseline，不是最終 RAG。</li>
-<li>內部文件可能含敏感資訊，接外部 LLM 前要先盤點資料分類。</li>
-<li>ingest 目前是 insert or replace，但正式版要處理刪除、版本與權限。</li>
-<li>回答一定要回傳 sources，方便使用者判斷可信度。</li>
-</ul>
-<h3>Debug 順序</h3>
-<ol>
-<li>先確認服務有沒有啟動。</li>
-<li>再確認 endpoint / webhook URL 是否正確。</li>
-<li>檢查環境變數是否有載入。</li>
-<li>用 echo / fake provider 排除 AI 服務問題。</li>
-<li>查看完整錯誤訊息，不要只看最後一行。</li>
-<li>把問題縮到最小可重現案例。</li>
-</ol>
-<h3>問別人前準備</h3>
-<ul>
-<li>repo / branch</li>
-<li>啟動指令</li>
-<li>完整錯誤訊息</li>
-<li>你已經檢查過哪些設定</li>
-<li>secret 請遮掉，不要直接貼 token</li>
-</ul></section><section><h2>企業內部 AI 助理模板：改成你的使用場景</h2>
+<p>下面每一條都是這個 repo 真的會踩到的坑，錯誤訊息都是本機實際跑出來貼上的。</p>
+<h3>坑 1：忘了先 ingest，查詢永遠是空的</h3>
+<p>assistant.db 不在 repo 裡，是 ingest 時才產生的。沒跑 ingest 就查，sources 一定是空陣列，而且不會報錯（db.py 會自動建空表）。對一個從沒 ingest 過的 DB 檢索，真實結果是 <code>[]</code>。修法：先跑 <code>python -m app.ingest sample_docs</code>。</p>
+<h3>坑 2：改了文件卻沒重新 ingest</h3>
+<p>/ask 讀的是 SQLite 不是直接讀檔。改了 sample_docs 沒重新 ingest，查到的還是舊資料。每次動 sample_docs 後都重跑 ingest（insert or replace，重跑安全）。</p>
+<h3>坑 3：DATABASE_URL 指到別的路徑</h3>
+<p>db.py 讀 DATABASE_URL（預設 assistant.db，相對於執行目錄）。ingest 和 uvicorn 在不同目錄或用了不同 .env，會操作到不同的 .db，於是「明明 ingest 成功，查還是空的」。固定在 repo 根目錄執行所有指令。</p>
+<h3>坑 4：AI_PROVIDER 設成 http 但金鑰沒填</h3>
+<p>送出 Authorization: Bearer（後面空白），httpx 直接擋下來，真實錯誤：</p>
+<pre><code>LocalProtocolError: Illegal header value b'Bearer '</code></pre>
+<p>/ask 回 500。修法：填上有效金鑰，或先改回 AI_PROVIDER=echo 排除 LLM 問題。</p>
+<h3>坑 5：金鑰 / endpoint 設錯（401 等）</h3>
+<p>金鑰無效或 endpoint 錯，會在 raise_for_status 丟出帶狀態碼的錯誤，真實錯誤：</p>
+<pre><code>HTTPStatusError: Client error '401 Unauthorized' for url 'https://api.openai.com/v1/chat/completions'</code></pre>
+<p>401 = 金鑰錯或過期；404 / 連線錯誤 = endpoint 填錯。</p>
+<h3>坑 6：request body 少欄位（422）</h3>
+<pre><code>{"detail":[{"type":"missing","loc":["body","question"],"msg":"Field required","input":{}}]}</code></pre>
+<p>這是正常的輸入驗證，帶上 question 即可。</p>
+<h3>坑 7：以為 echo 就是 AI</h3>
+<p>echo provider 不呼叫任何模型，只把檢索 context 原樣回傳（answer 開頭固定是 Echo answer.）。要真的讓模型回答，把 provider 換成 http。</p></section><section><h2>企業內部 AI 助理模板：改成你的使用場景</h2>
 <h3>可延伸方向</h3>
 <ul>
 <li>改成部門知識庫：依文件路徑、部門、權限分群。</li>
@@ -184,36 +214,33 @@ curl http://127.0.0.1:8000/health
 <li>先保留原本可跑的範例，另開 branch 做實驗。</li>
 <li>每加一個外部服務，就加一個健康檢查或 smoke test。</li>
 <li>先做 PoC，再決定要不要產品化。</li>
-</ul>
-<h3>適合拿來做課程 / 工作坊的題目</h3>
-<ul>
-<li>從零跑起這個 starter。</li>
-<li>改成自己的真實場景。</li>
-<li>加入權限、部署與監控。</li>
-<li>現場 debug 學員遇到的問題。</li>
 </ul></section><section><h2>企業內部 AI 助理模板：工作坊與顧問協助</h2>
-<p>這個 repo 的教學內容會盡量公開，讓你可以自己照著做。</p>
-<p>如果你需要的不是「看文件」，而是希望有人陪你把它改成自己的情境，可以考慮工作坊或顧問協助。</p>
+<p>這個 repo 的教學內容會盡量公開，讓你可以自己照著做。如果你需要的不是「看文件」，而是希望有人陪你把它改成自己的情境，可以考慮工作坊或顧問協助。</p>
 <h3>適合找我協助的情況</h3>
 <ul>
-<li>你照 README 做但卡在 token、webhook、部署或環境問題。</li>
+<li>你照 README 做但卡在金鑰、provider、部署或環境問題。</li>
 <li>你想把範例改成公司內部流程。</li>
 <li>你需要幫客戶或老闆做一個能展示的 PoC。</li>
 <li>你想知道這個 starter 上線前還缺哪些安全與維運設計。</li>
-<li>你想用這個題目規劃內訓或小班課程。</li>
-</ul>
-<h3>可以提供的形式</h3>
-<ul>
-<li>2 小時線上工作坊。</li>
-<li>小班陪跑與 Q&amp;A。</li>
-<li>一對一 debug / code review。</li>
-<li>公司 PoC 需求訪談與架構建議。</li>
-<li>協助部署到 VPS、雲端平台或公司內網。</li>
 </ul>
 <h3>聯絡方式</h3>
 <ul>
 <li>GitHub Pages：https://yazelin.github.io/company-ai-assistant-template/</li>
 <li>GitHub repo：https://github.com/yazelin/company-ai-assistant-template</li>
 <li>Email：yaze.lin.j303@gmail.com</li>
+</ul></section><section><h2>關於作者</h2>
+<p>這個範本由 <strong>林亞澤（Yaze Lin）</strong> 維護 — 出身機電自動化系統整合，現在把同一套工程方法用在 AI 產品上。</p>
+<ul>
+<li>任職於 <strong>擎添工業 ChingTech</strong>（1984 年成立的機電自動化公司：PLC 程式、機械手臂、AGV 無人搬運、半導體封測／PCB／面板／光學產線整合）。</li>
+<li>技術筆記與更多範例：<a href="https://yazelin.github.io">yazelin.github.io</a> · GitHub <a href="https://github.com/yazelin">@yazelin</a></li>
 </ul>
-<p>建議你先照公開教學跑一次，然後帶著具體錯誤訊息或想改造的場景來討論，效率最高。</p></section></main><section id="contact"><h2>需要手把手協助？</h2><p>公開文件適合照著跑；工作坊與顧問適合處理你的真實環境、debug、部署、權限與客製化改造。</p><p><a class="btn primary" href="https://yazelin.github.io/company-ai-assistant-template/#waitlist">留下 email / 收到開課通知</a></p></section><p class="footer">© Yaze Lin. 教學內容公開於 GitHub，歡迎 fork、star、照著做。</p></div></body></html>
+<h3>從範本到正式產品</h3>
+<p class="muted">你正在看的「知識庫 + 檢索」範本，正式版是 CTOS 的知識庫與產業 Agent 模組。</p>
+<p>如果你想看同樣的想法做成正式、上線中的產品：</p>
+<ul>
+<li><strong>CTOS</strong> — 企業 AI 工作平台：macOS 風格 Web 桌面、知識庫 RAG 檢索、產業專屬 Agent、LINE Bot 整合，資料留在台灣。<a href="https://ching-tech.com">ching-tech.com</a> · <a href="https://ching-tech.github.io">品牌站</a></li>
+<li><strong>CTOS-Lite / CT JINN</strong> — 把公司裝進 LINE 的個人版 AI 助理，加 LINE 即可試用：<a href="https://line.me/R/ti/p/@285fjkky">@285fjkky</a></li>
+<li><strong>Mori Desktop</strong> — 個人 AI 管家桌面應用（Tauri 2 + Rust + React）：<a href="https://github.com/yazelin/mori-desktop">github.com/yazelin/mori-desktop</a></li>
+<li><strong>AgentOS</strong> — 跨 CLI 的 agent 治理平台（開發中）</li>
+</ul>
+<p>想把這個範本落地成你公司的內部系統，或想上一堂從 0 到部署的課？來信 yaze.lin.j303@gmail.com，或追蹤上面的連結。</p></section></main><section id="contact"><h2>需要手把手協助？</h2><p>公開文件適合照著跑；工作坊與顧問適合處理你的真實環境、debug、部署、權限與客製化改造。</p><p><a class="btn primary" href="https://yazelin.github.io/company-ai-assistant-template/#waitlist">留下 email / 收到開課通知</a></p></section><p class="footer">© Yaze Lin. 教學內容公開於 GitHub，歡迎 fork、star、照著做。</p></div></body></html>
