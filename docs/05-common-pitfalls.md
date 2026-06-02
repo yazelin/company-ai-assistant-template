@@ -20,7 +20,7 @@ search result on never-ingested db: []
 
 注意：這不會報錯。`app/db.py` 的 `conn()` 會 `create table if not exists`，所以 DB 自動被建出來、只是裡面沒有任何文件。很多人以為「服務有回 200 就 OK」，其實是空庫。
 
-修法：先跑 `python -m app.ingest sample_docs`，確認印出 `ingested ...`，再查。
+修法：先跑 `uv run python -m app.ingest sample_docs`，確認印出 `ingested ...`，再查。
 
 ## 坑 2：改了文件卻沒重新 ingest
 
@@ -28,7 +28,7 @@ search result on never-ingested db: []
 
 症狀：你明明加了 `refund-policy.md`，問退費相關問題卻還是 `"sources":[]`。
 
-修法：每次動 `sample_docs/` 之後都重跑 `python -m app.ingest sample_docs`（`insert or replace`，重跑安全，不會重複）。
+修法：每次動 `sample_docs/` 之後都重跑 `uv run python -m app.ingest sample_docs`（`insert or replace`，重跑安全，不會重複）。
 
 ## 坑 3：DATABASE_URL 指到別的路徑，ingest 和查詢用了不同的 DB
 
@@ -73,6 +73,26 @@ HTTPStatusError: Client error '401 Unauthorized' for url 'https://api.openai.com
 ## 坑 7：以為 echo 就是 AI
 
 `echo` provider 不呼叫任何模型，只把檢索 context 原樣回傳（answer 開頭固定是 `Echo answer.`）。它是用來「單獨驗證檢索」的，不是 LLM 回答。要真的讓模型回答，照 `03-step-by-step.md` 把 provider 換成 `http`。
+
+## 坑 8：忘了先 `uv sync`，或沒在指令前加 `uv run`
+
+本專案改用 uv，相依套件裝在 `uv sync` 自動建立的 `.venv` 裡。沒先 `uv sync` 就跑，或直接打 `uvicorn ...` / `python -m app.ingest ...`（少了 `uv run`），會用到系統 Python，常見錯誤是找不到套件：
+
+```text
+ModuleNotFoundError: No module named 'fastapi'
+```
+
+或 `uvicorn: command not found`。修法：在 repo 根目錄先 `uv sync` 一次，之後所有指令都加 `uv run` 前綴（例：`uv run uvicorn ...`、`uv run python -m app.ingest sample_docs`），uv 會自動在對的環境裡執行。
+
+## 坑 9：`uv: command not found`（uv 沒裝或沒重開終端機）
+
+還沒裝 uv，或裝完沒重開終端機（installer 會把 uv 加進 PATH，需要新的 shell 才生效）：
+
+```text
+uv: command not found
+```
+
+修法：Ubuntu / macOS 跑 `curl -LsSf https://astral.sh/uv/install.sh | sh`；Windows（PowerShell）跑 `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`。裝完**重開終端機**，再 `uv --version` 確認。
 
 ## Debug 順序（這個 repo 專用）
 

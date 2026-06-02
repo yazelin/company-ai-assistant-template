@@ -21,29 +21,34 @@
 <p>這份文件帶你從 clone 到「打 /ask 拿到答案」走完一遍。每一步都附上「實際指令 → 真實輸出 → 成功的話你會看到」。輸出都是本機真的跑出來貼上的。</p>
 <h3>前置需求</h3>
 <ul>
-<li>Python 3.10+（本文用 3.12.3 驗證）</li>
+<li><a href="https://docs.astral.sh/uv/">uv</a>（本專案用 uv 管理 Python 環境，會自動準備對應的 Python，pyproject.toml 要求 3.10+）</li>
 <li>Git</li>
-<li>可以使用終端機（會用到 <code>curl</code>）</li>
+<li>可以使用終端機（會用到 <code>curl</code>；Windows 見下方補充）</li>
 <li>之後若要接真實 LLM，再準備 OpenAI 相容的 endpoint 與 API key。第一輪用內建 echo provider，不需要任何金鑰。</li>
 </ul>
+<p>環境差異只在「安裝 uv」這一步。裝好之後 <code>uv sync</code> / <code>uv run</code> 在 Ubuntu 與 Windows 完全相同，下面不再每條指令寫兩遍。Windows 的 <code>curl</code> 是 <code>Invoke-WebRequest</code> 的別名，請改用 <code>curl.exe ...</code> 或 <code>Invoke-RestMethod ...</code>；Ubuntu / macOS 用一般 <code>curl</code>。</p>
 <h3>這個 starter 在做什麼（一句話）</h3>
 <p>把 <code>sample_docs/</code> 裡的 .md / .txt 索引進一個 SQLite 檔（<code>assistant.db</code>），然後 POST /ask 時用「關鍵字計次」找出最相關的片段，組成 context 回給你。</p>
 <p>注意：<code>assistant.db</code> 沒有放進 repo（已被 <code>.gitignore</code> 忽略）。它是你第一步 ingest 時自己產生的，所以下面 ingest 那步如果沒跑，後面查詢一定是空的。</p>
+<h3>步驟 0：安裝 uv（一次就好）</h3>
+<p>Ubuntu / macOS：</p>
+<pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
+<p>Windows（PowerShell）：</p>
+<pre><code>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre>
+<p>裝完重開終端機，<code>uv --version</code> 印得出版本就 OK。</p>
 <h3>步驟 1：安裝</h3>
 <pre><code>git clone https://github.com/yazelin/company-ai-assistant-template.git
 cd company-ai-assistant-template
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+uv sync
 cp .env.example .env</code></pre>
-<p><code>.env.example</code> 預設就是 <code>AI_PROVIDER=echo</code>，複製過去即可，先不用改。</p>
+<p><code>uv sync</code> 會依 pyproject.toml + uv.lock 自動建立 <code>.venv</code> 並裝好套件（毋須手動 venv/activate），<code>uv sync</code> / <code>uv run</code> 在 Ubuntu 與 Windows 完全相同。<code>.env.example</code> 預設就是 <code>AI_PROVIDER=echo</code>，複製過去即可，先不用改（Windows PowerShell 用 <code>copy .env.example .env</code>）。沒裝 uv 的話 <code>pip install .</code> 也能裝，但本教學以 uv 為主。</p>
 <h3>步驟 2：把文件索引進 SQLite（這一步會「生出」assistant.db）</h3>
-<pre><code>python -m app.ingest sample_docs</code></pre>
+<pre><code>uv run python -m app.ingest sample_docs</code></pre>
 <p>真實輸出：</p>
 <pre><code>ingested sample_docs/overview.md</code></pre>
 <p>成功的話你會看到印出 <code>ingested ...</code> 一行，而且資料夾下多出一個 <code>assistant.db</code> 檔（約 12K）。跳過這步的話，後面查詢的 sources 會永遠是空的。</p>
 <h3>步驟 3：啟動服務</h3>
-<pre><code>uvicorn app.main:app --reload --port 8000</code></pre>
+<pre><code>uv run uvicorn app.main:app --reload --port 8000</code></pre>
 <p>成功的話終端機會停在 <code>Uvicorn running on http://127.0.0.1:8000</code> 與 <code>Application startup complete.</code>。請另開一個終端機做下面的測試。</p>
 <h3>步驟 4：健康檢查</h3>
 <pre><code>curl http://127.0.0.1:8000/health</code></pre>
@@ -117,7 +122,7 @@ cp .env.example .env</code></pre>
 Customers may request a refund within a thirty day window after purchase.
 Approved refunds are returned to the original payment method.</code></pre>
 <p><strong>重新 ingest</strong>（改完文件一定要重跑，否則 SQLite 裡還是舊內容）：</p>
-<pre><code>python -m app.ingest sample_docs</code></pre>
+<pre><code>uv run python -m app.ingest sample_docs</code></pre>
 <p>真實輸出（多了一行新檔案）：</p>
 <pre><code>ingested sample_docs/overview.md
 ingested sample_docs/refund-policy.md</code></pre>
@@ -168,7 +173,9 @@ MODEL_NAME=gpt-4o-mini</code></pre>
 <li>部署目標上有跑過一次 ingest（assistant.db 是執行時產生的，不在 repo 裡）。</li>
 </ul>
 <h3>啟動指令</h3>
-<pre><code>uvicorn app.main:app --host 0.0.0.0 --port 8000</code></pre>
+<p>部署機先 <code>uv sync</code>（依 uv.lock 還原相同套件版本），再用 <code>uv run</code> 啟動。</p>
+<pre><code>uv sync
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000</code></pre>
 <h3>常見部署選項</h3>
 <ul>
 <li>Render / Railway / Fly.io：適合快速 demo。</li>
@@ -183,7 +190,7 @@ MODEL_NAME=gpt-4o-mini</code></pre>
 <p>部署不是最後一步。正式使用前至少要補：log、錯誤告警、權限控管、備份策略、secret rotation，以及基本監控。</p></section><section><h2>企業內部 AI 助理模板：常見問題與踩雷清單</h2>
 <p>下面每一條都是這個 repo 真的會踩到的坑，錯誤訊息都是本機實際跑出來貼上的。</p>
 <h3>坑 1：忘了先 ingest，查詢永遠是空的</h3>
-<p>assistant.db 不在 repo 裡，是 ingest 時才產生的。沒跑 ingest 就查，sources 一定是空陣列，而且不會報錯（db.py 會自動建空表）。對一個從沒 ingest 過的 DB 檢索，真實結果是 <code>[]</code>。修法：先跑 <code>python -m app.ingest sample_docs</code>。</p>
+<p>assistant.db 不在 repo 裡，是 ingest 時才產生的。沒跑 ingest 就查，sources 一定是空陣列，而且不會報錯（db.py 會自動建空表）。對一個從沒 ingest 過的 DB 檢索，真實結果是 <code>[]</code>。修法：先跑 <code>uv run python -m app.ingest sample_docs</code>。</p>
 <h3>坑 2：改了文件卻沒重新 ingest</h3>
 <p>/ask 讀的是 SQLite 不是直接讀檔。改了 sample_docs 沒重新 ingest，查到的還是舊資料。每次動 sample_docs 後都重跑 ingest（insert or replace，重跑安全）。</p>
 <h3>坑 3：DATABASE_URL 指到別的路徑</h3>
@@ -200,7 +207,11 @@ MODEL_NAME=gpt-4o-mini</code></pre>
 <pre><code>{"detail":[{"type":"missing","loc":["body","question"],"msg":"Field required","input":{}}]}</code></pre>
 <p>這是正常的輸入驗證，帶上 question 即可。</p>
 <h3>坑 7：以為 echo 就是 AI</h3>
-<p>echo provider 不呼叫任何模型，只把檢索 context 原樣回傳（answer 開頭固定是 Echo answer.）。要真的讓模型回答，把 provider 換成 http。</p></section><section><h2>企業內部 AI 助理模板：改成你的使用場景</h2>
+<p>echo provider 不呼叫任何模型，只把檢索 context 原樣回傳（answer 開頭固定是 Echo answer.）。要真的讓模型回答，把 provider 換成 http。</p>
+<h3>坑 8：忘了先 uv sync，或沒在指令前加 uv run</h3>
+<p>本專案改用 uv，相依套件裝在 <code>uv sync</code> 自動建立的 <code>.venv</code> 裡。沒先 <code>uv sync</code> 就跑，或直接打 <code>uvicorn ...</code> / <code>python -m app.ingest ...</code>（少了 <code>uv run</code>），會用到系統 Python，常見錯誤是 <code>ModuleNotFoundError: No module named 'fastapi'</code> 或 <code>uvicorn: command not found</code>。修法：在 repo 根目錄先 <code>uv sync</code> 一次，之後所有指令都加 <code>uv run</code> 前綴。</p>
+<h3>坑 9：uv: command not found（uv 沒裝或沒重開終端機）</h3>
+<p>還沒裝 uv，或裝完沒重開終端機（installer 會把 uv 加進 PATH，需要新的 shell 才生效）。修法：Ubuntu / macOS 跑 <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code>；Windows（PowerShell）跑 <code>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</code>，裝完<strong>重開終端機</strong>再 <code>uv --version</code> 確認。</p></section><section><h2>企業內部 AI 助理模板：改成你的使用場景</h2>
 <h3>可延伸方向</h3>
 <ul>
 <li>改成部門知識庫：依文件路徑、部門、權限分群。</li>
