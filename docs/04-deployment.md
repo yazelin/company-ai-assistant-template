@@ -10,8 +10,11 @@
 
 ## 啟動指令
 
+本專案用 uv 管理環境，部署機先 `uv sync`（依 uv.lock 還原相同套件版本），再用 `uv run` 啟動。`uv sync` / `uv run` 在 Ubuntu 與 Windows 完全相同。
+
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+uv sync
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ## 常見部署選項

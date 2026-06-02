@@ -5,7 +5,7 @@
 1. 把「你自己的文件」加進去，證明它真的被檢索到（含真實 before / after）。
 2. 從 `echo` 換成真實的 HTTP LLM provider。
 
-下面的輸出都是本機真的跑出來貼上的。假設你已照 quickstart 跑過 ingest、服務在 `127.0.0.1:8000`。
+下面的輸出都是本機真的跑出來貼上的。假設你已照 quickstart 裝好 uv、跑過 `uv sync` 與 ingest、服務在 `127.0.0.1:8000`。所有指令前面的 `uv run` 在 Ubuntu 與 Windows 完全相同。
 
 ## 第一部分：加一份自己的文件，看它被檢索到
 
@@ -43,7 +43,7 @@ Approved refunds are returned to the original payment method.
 關鍵：**改完文件一定要重新 ingest**，否則 SQLite 裡還是舊的內容。
 
 ```bash
-python -m app.ingest sample_docs
+uv run python -m app.ingest sample_docs
 ```
 
 真實輸出（現在多了一行新檔案）：

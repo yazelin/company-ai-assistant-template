@@ -36,13 +36,38 @@ Small teams and companies that want a private AI knowledge assistant.
 
 ## Quick start
 
+本專案改用 [uv](https://docs.astral.sh/uv/) 管理環境（pyproject.toml + uv.lock），不再需要手動 `venv` / `pip install`。
+
+### 1. 安裝 uv（一次就好）
+
+Ubuntu / macOS：
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Windows（PowerShell）：
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+裝完重開終端機，`uv --version` 印得出版本就 OK。
+
+### 2. 取得專案、裝依賴、跑起來
+
 ```bash
 git clone https://github.com/yazelin/company-ai-assistant-template.git
 cd company-ai-assistant-template
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+uv sync
+cp .env.example .env   # Windows PowerShell: copy .env.example .env
+uv run python -m app.ingest sample_docs
+uv run uvicorn app.main:app --reload --port 8000
 ```
+
+`uv sync` 會依 pyproject.toml + uv.lock 自動建立 `.venv` 並裝好套件（毋須手動 venv/activate）；`uv run` 直接在那個環境裡執行。**`uv sync` / `uv run` 在 Ubuntu 與 Windows 完全相同。** 加新套件用 `uv add <套件>`（會同時更新 pyproject 與 uv.lock）。
+
+沒裝 uv 的話 `pip install .` 也能裝，但本教學以 uv 為主。
 
 See the source files and `.env.example` for the minimal runnable path.
 

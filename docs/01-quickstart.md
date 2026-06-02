@@ -4,10 +4,14 @@
 
 ## 前置需求
 
-- Python 3.10+（本文用 3.12.3 驗證）
+- [uv](https://docs.astral.sh/uv/)（本專案用 uv 管理 Python 環境，會自動準備對應的 Python，pyproject.toml 要求 3.10+）
 - Git
-- 可以使用終端機（會用到 `curl`）
+- 可以使用終端機（會用到 `curl`；Windows 見下方補充）
 - 之後若要接真實 LLM，再準備 OpenAI 相容的 endpoint 與 API key。第一輪用內建 `echo` provider，不需要任何金鑰。
+
+> 環境差異只在「安裝 uv」這一步。裝好之後 `uv sync` / `uv run` 在 Ubuntu 與 Windows 完全相同，下面不再每條指令寫兩遍。
+>
+> Windows 的 `curl` 是 `Invoke-WebRequest` 的別名，行為跟 Ubuntu 的 `curl` 不同。Windows 請用 `curl.exe ...` 或 `Invoke-RestMethod ...`；Ubuntu / macOS 用一般 `curl`。
 
 ## 這個 starter 在做什麼（一句話）
 
@@ -15,25 +19,51 @@
 
 注意：`assistant.db` 沒有放進 repo（已被 `.gitignore` 忽略）。**它是你第一步 ingest 時自己產生的**，所以下面第 5 步如果沒跑，後面查詢一定是空的。
 
+## 步驟 0：安裝 uv（一次就好）
+
+Ubuntu / macOS：
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Windows（PowerShell）：
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+裝完重開終端機，`uv --version` 印得出版本就 OK。
+
 ## 步驟 1：安裝
 
 ```bash
 git clone https://github.com/yazelin/company-ai-assistant-template.git
 cd company-ai-assistant-template
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
+uv sync
+cp .env.example .env   # Windows PowerShell: copy .env.example .env
 ```
 
-`.env.example` 預設就是 `AI_PROVIDER=echo`，所以複製過去即可，先不用改。
+`uv sync` 會依 pyproject.toml + uv.lock 自動建立 `.venv` 並裝好套件（毋須手動 venv/activate）。真實輸出（節錄）：
 
-成功的話你會看到 `pip` 安裝完 fastapi / uvicorn / httpx / python-dotenv，沒有紅色錯誤。
+```text
+Using CPython 3.11.13
+Creating virtual environment at: .venv
+Resolved 24 packages in 273ms
+Installed 21 packages in 22ms
+ + fastapi==0.115.6
+ + httpx==0.28.1
+ + python-dotenv==1.0.1
+ + uvicorn==0.34.0
+ ...
+```
+
+`.env.example` 預設就是 `AI_PROVIDER=echo`，所以複製過去即可，先不用改。沒裝 uv 的話 `pip install .` 也能裝，但本教學以 uv 為主。
 
 ## 步驟 2：把文件索引進 SQLite（這一步會「生出」assistant.db）
 
 ```bash
-python -m app.ingest sample_docs
+uv run python -m app.ingest sample_docs
 ```
 
 真實輸出：
@@ -53,7 +83,7 @@ assistant.db  12.0K
 ## 步驟 3：啟動服務
 
 ```bash
-uvicorn app.main:app --reload --port 8000
+uv run uvicorn app.main:app --reload --port 8000
 ```
 
 成功的話終端機會停在這幾行（服務常駐，不會跳回提示字元）：
