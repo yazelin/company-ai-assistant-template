@@ -1,1 +1,27 @@
-<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#f59e0b'/><stop offset='1' stop-color='#14b8a6'/></linearGradient></defs><rect width='512' height='512' rx='116' fill='#17120a'/><g transform='scale(.9) translate(28 28)'><rect x='150' y='80' width='230' height='300' rx='24' fill='url(#g)'/><rect x='118' y='124' width='230' height='300' rx='24' fill='none' stroke='white' stroke-opacity='.65' stroke-width='10'/><path d='M185 170 H310 M185 220 H320 M185 270 H285' stroke='white' stroke-opacity='.8' stroke-width='12' stroke-linecap='round'/><circle cx='330' cy='338' r='54' fill='#14b8a6'/><path d='M304 338 H356 M330 312 V364' stroke='white' stroke-width='10' stroke-linecap='round'/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Company AI Assistant logo">
+<defs>
+  <linearGradient id="gradL" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#14b8a6"/></linearGradient>
+  <linearGradient id="bggL" x1="0" y1="0" x2="0.6" y2="1">
+    <stop offset="0" stop-color="#252424"/><stop offset="1" stop-color="#17120a"/></linearGradient>
+  <radialGradient id="glowL" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#f59e0b" stop-opacity="0.55"/>
+    <stop offset="0.55" stop-color="#14b8a6" stop-opacity="0.12"/>
+    <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/></radialGradient>
+  <filter id="blurL" x="-60%" y="-60%" width="220%" height="220%">
+    <feGaussianBlur stdDeviation="9"/></filter>
+  <linearGradient id="sheenL" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff" stop-opacity="0.10"/>
+    <stop offset="0.45" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+  <pattern id="gridL" width="32" height="32" patternUnits="userSpaceOnUse">
+    <path d="M32 0H0V32" fill="none" stroke="#f59e0b" stroke-opacity="0.05" stroke-width="1"/></pattern>
+</defs>
+<rect width="512" height="512" rx="116" fill="url(#bggL)"/>
+<rect width="512" height="512" rx="116" fill="url(#gridL)"/>
+<circle cx="256" cy="236" r="190" fill="url(#glowL)"/>
+<circle cx="256" cy="256" r="150" fill="none" stroke="url(#gradL)" stroke-opacity="0.25" stroke-width="2"/>
+<rect width="512" height="512" rx="116" fill="url(#sheenL)"/>
+<g filter="url(#blurL)" opacity="0.45"><g transform="translate(144.00 152.00) scale(9.3333)" fill="#000000"><path d="M18.68 12.32a4.49 4.49 0 0 0-6.36.01a4.49 4.49 0 0 0 0 6.36a4.51 4.51 0 0 0 5.57.63L21 22.39L22.39 21l-3.09-3.11c1.13-1.77.87-4.09-.62-5.57m-1.41 4.95c-.98.98-2.56.97-3.54 0c-.97-.98-.97-2.56.01-3.54c.97-.97 2.55-.97 3.53 0c.97.98.97 2.56 0 3.54M10.9 20.1a6.5 6.5 0 0 1-1.48-2.32C6.27 17.25 4 15.76 4 14v3c0 2.21 3.58 4 8 4c-.4-.26-.77-.56-1.1-.9M4 9v3c0 1.68 2.07 3.12 5 3.7v-.2c0-.93.2-1.85.58-2.69C6.34 12.3 4 10.79 4 9m8-6C7.58 3 4 4.79 4 7c0 2 3 3.68 6.85 4h.05c1.2-1.26 2.86-2 4.6-2c.91 0 1.81.19 2.64.56A3.22 3.22 0 0 0 20 7c0-2.21-3.58-4-8-4"/></g></g><g transform="translate(144.00 144.00) scale(9.3333)" fill="url(#gradL)"><path d="M18.68 12.32a4.49 4.49 0 0 0-6.36.01a4.49 4.49 0 0 0 0 6.36a4.51 4.51 0 0 0 5.57.63L21 22.39L22.39 21l-3.09-3.11c1.13-1.77.87-4.09-.62-5.57m-1.41 4.95c-.98.98-2.56.97-3.54 0c-.97-.98-.97-2.56.01-3.54c.97-.97 2.55-.97 3.53 0c.97.98.97 2.56 0 3.54M10.9 20.1a6.5 6.5 0 0 1-1.48-2.32C6.27 17.25 4 15.76 4 14v3c0 2.21 3.58 4 8 4c-.4-.26-.77-.56-1.1-.9M4 9v3c0 1.68 2.07 3.12 5 3.7v-.2c0-.93.2-1.85.58-2.69C6.34 12.3 4 10.79 4 9m8-6C7.58 3 4 4.79 4 7c0 2 3 3.68 6.85 4h.05c1.2-1.26 2.86-2 4.6-2c.91 0 1.81.19 2.64.56A3.22 3.22 0 0 0 20 7c0-2.21-3.58-4-8-4"/></g>
+<rect x="2" y="2" width="508" height="508" rx="114" fill="none" stroke="#ffffff" stroke-opacity="0.07" stroke-width="2"/>
+<rect x="0.75" y="0.75" width="510.5" height="510.5" rx="116" fill="none" stroke="url(#gradL)" stroke-opacity="0.4" stroke-width="1.5"/>
+</svg>
