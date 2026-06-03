@@ -9,5 +9,8 @@ dependencies = [
     "python-dotenv==1.0.1",
 ]
 
+[project.optional-dependencies]
+semantic = ["fastembed>=0.8,<0.9"]
+
 [tool.uv]
 package = false
