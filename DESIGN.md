@@ -28,6 +28,7 @@
 - /ask API 會回傳 answer 與 sources
 - sample_docs 可直接展示內部文件問答流程
 - 適合顧問訪談後快速做企業 AI PoC
+- 內建語意檢索對照組(後半段 `docs/08`):同介面把關鍵字檢索升級成 fastembed 語意檢索,免 API key
 
 ## Assets
 

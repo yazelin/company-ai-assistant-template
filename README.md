@@ -22,6 +22,7 @@ Build an internal document Q&A assistant before adding vector DB complexity.
 - Markdown 教學：[`docs/`](docs/)
 - 快速開始：[`docs/01-quickstart.md`](docs/01-quickstart.md)
 - 常見踩雷：[`docs/05-common-pitfalls.md`](docs/05-common-pitfalls.md)
+- 後半段(語意檢索對照組):docs/08-semantic-search-upgrade.md
 
 ## Who this is for
 
@@ -33,6 +34,7 @@ Small teams and companies that want a private AI knowledge assistant.
 - SQLite document index
 - Keyword retrieval baseline
 - Provider adapter ready for LLM APIs
+- 語意檢索升級版(optional `semantic` extra)— 見 `docs/08-semantic-search-upgrade.md`
 
 ## Quick start
 
@@ -70,6 +72,14 @@ uv run uvicorn app.main:app --reload --port 8000
 沒裝 uv 的話 `pip install .` 也能裝，但本教學以 uv 為主。
 
 See the source files and `.env.example` for the minimal runnable path.
+
+### 後半段:語意檢索版(對照組)
+
+```bash
+uv sync --extra semantic
+PYTHONPATH=. uv run python contrast_smoke_test_semantic.py   # 關鍵字 0 / 語意找得到
+SEARCH_BACKEND=semantic uv run uvicorn app.main:app          # /ask 改用語意檢索
+```
 
 ## Learn / get help
 
