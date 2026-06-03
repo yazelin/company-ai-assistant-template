@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        track: [keyword, semantic]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      # keyword track: base deps, keyword baseline
+      - name: Sync (keyword)
+        if: matrix.track == 'keyword'
+        run: uv sync
+      - name: Keyword baseline smoke
+        if: matrix.track == 'keyword'
+        run: PYTHONPATH=. uv run python keyword_smoke_test.py
+
+      # semantic track: cache the embedding model, install the extra, run contrast
+      - name: Cache fastembed model
+        if: matrix.track == 'semantic'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/fastembed
+          key: fastembed-paraphrase-multilingual-minilm-l12-v2
+      - name: Sync with semantic extra
+        if: matrix.track == 'semantic'
+        run: uv sync --extra semantic
+      - name: Keyword -> semantic contrast
+        if: matrix.track == 'semantic'
+        run: PYTHONPATH=. uv run python contrast_smoke_test_semantic.py
