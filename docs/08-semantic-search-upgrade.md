@@ -57,6 +57,8 @@ PYTHONPATH=. uv run python contrast_smoke_test_semantic.py
 
 成功會看到 `OK: keyword->semantic contrast verified (keyword 0 / semantic finds it)`。這就是語意檢索真正贏關鍵字的地方:使用者不會剛好用你文件裡的詞。
 
+> 跑的時候 fastembed 可能印一行 `UserWarning: ... now uses mean pooling instead of CLS embedding` —— 這是 fastembed 對這個模型的正常提示,結果正確、可忽略。
+
 ## 步驟 4:在真 app 切換
 
 `/ask` 用 `SEARCH_BACKEND` 切換,預設 `keyword`、設 `semantic` 就改用語意版:
@@ -67,6 +69,8 @@ SEARCH_BACKEND=semantic uv run uvicorn app.main:app
 ```
 
 下游 AI 回答完全不變 —— 只是餵給它的「找到的文件」品質變好。
+
+> 第一次在 `semantic` 模式打 `/ask` 會稍等一下:`search_semantic` 會把目前所有文件 embed 並存進 `embeddings` 表(冪等,只做一次);之後的查詢就只 embed 問句、算餘弦,很快。新增文件後再打一次即可補索引。
 
 ## 何時升級
 
