@@ -1,65 +1,138 @@
-<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>企業內部 AI 助理模板｜完整教學</title><meta name="description" content="企業內部 AI 助理模板 的公開教學文件：快速開始、架構、部署、踩雷與改造方向。"><style>:root{--bg:#17120a;--accent:#f59e0b;--text:#f8fafc;--muted:#94a3b8;--panel:rgba(255,255,255,.06);--border:rgba(255,255,255,.12)}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0%, color-mix(in srgb,var(--accent) 24%,transparent), transparent 36%),linear-gradient(180deg,var(--bg),#05070b);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Noto Sans TC','Segoe UI',sans-serif;line-height:1.75}a{color:inherit}.wrap{max-width:1120px;margin:0 auto;padding:32px 20px 80px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:54px}.brand{font-weight:900;text-decoration:none}.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);padding:10px 14px;border-radius:999px;text-decoration:none;background:rgba(255,255,255,.04)}.primary{background:var(--accent);color:#020617;border-color:transparent;font-weight:800}.hero{padding:48px;border:1px solid var(--border);border-radius:28px;background:var(--panel);box-shadow:0 24px 80px rgba(0,0,0,.32)}h1{font-size:clamp(34px,6vw,72px);line-height:1.05;margin:0 0 20px}.lead{font-size:22px;color:#dbeafe;max-width:820px}.muted{color:var(--muted)}.toc{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0}.toc a{font-size:14px;text-decoration:none;border:1px solid var(--border);border-radius:999px;padding:8px 12px;color:#dbeafe;background:rgba(255,255,255,.04)}main{display:grid;gap:22px;margin-top:28px}section{border:1px solid var(--border);border-radius:24px;background:rgba(255,255,255,.045);padding:28px;min-width:0}h2{font-size:30px;line-height:1.25;margin:0 0 16px}h3{font-size:21px;margin-top:24px;color:#e2e8f0}p,li{color:#cbd5e1}pre{background:#020617;border:1px solid rgba(148,163,184,.25);border-radius:16px;padding:18px;overflow:auto;max-width:100%}code{font-family:'JetBrains Mono','SFMono-Regular',Consolas,monospace;color:#bfdbfe}ul,ol{padding-left:24px}.footer{margin-top:40px;color:var(--muted);font-size:14px}@media(max-width:720px){.top{align-items:flex-start;flex-direction:column}.hero{padding:28px}}</style><style>/* CTA polish: solid deep button + white bold text */.primary,.btn.primary{background:#0f766e!important;background-image:none!important;color:#fff!important;border-color:transparent!important}.form button,.card.form button,.ml-embedded button[type=submit],.ml-embedded .ml-form-embedSubmit button{background:#0f766e!important;background-image:none!important;color:#fff!important}/* unified content links = page accent */a:not([class]){color:var(--accent)!important}a:not([class]):hover{filter:brightness(1.25)}</style></head><body><div class="wrap"><nav class="top"><a class="brand" href="index.html">← Company AI Assistant</a><div><a class="btn" href="https://github.com/yazelin/company-ai-assistant-template">GitHub</a> <a class="btn primary" href="#contact">工作坊 / 顧問</a></div></nav><header class="hero"><p class="muted">公開教學文件</p><h1>企業內部 AI 助理模板</h1><p class="lead">先用 SQLite + keyword retrieval 做出可展示的內部文件 AI 助理，再逐步升級成 RAG。</p><p class="muted">Markdown 原始檔也放在 <code>docs/</code>，這個頁面方便用瀏覽器直接閱讀。</p><div class="toc"><a href='https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/00-overview.md'>00-overview</a><a href='https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/01-quickstart.md'>01-quickstart</a><a href='https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/02-architecture.md'>02-architecture</a><a href='https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/03-step-by-step.md'>03-step-by-step</a><a href='https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/04-deployment.md'>04-deployment</a><a href='https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/05-common-pitfalls.md'>05-common-pitfalls</a><a href='https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/06-customize-for-your-use-case.md'>06-customize-for-your-use-case</a><a href='https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/07-workshop-and-consulting.md'>07-workshop-and-consulting</a><a href='https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/08-semantic-search-upgrade.md'>08-semantic-search-upgrade</a></div></header><main><section><h2>企業內部 AI 助理模板：總覽</h2>
-<p>先用 SQLite + keyword retrieval 做出可展示的內部文件 AI 助理，再逐步升級成 RAG。</p>
-<h3>適合誰</h3>
-<p>想先驗證內部文件問答、SOP 查詢、知識庫助理的中小企業與工程團隊。</p>
-<h3>你會做出什麼</h3>
-<ul>
-<li>公司 SOP 問答 PoC</li>
-<li>內部文件搜尋與摘要</li>
-<li>給老闆看的 AI 助理展示</li>
-<li>後續升級向量資料庫 / RAG 的起點</li>
-</ul>
-<h3>建議學習方式</h3>
-<ol>
-<li>先照 <code>01-quickstart.md</code> 跑起來。</li>
-<li>再看 <code>02-architecture.md</code> 理解每個檔案負責什麼。</li>
-<li>照 <code>03-step-by-step.md</code> 做一次完整流程。</li>
-<li>準備部署時看 <code>04-deployment.md</code>。</li>
-<li>卡住時先查 <code>05-common-pitfalls.md</code>。</li>
-<li>想改成自己的場景，看 <code>06-customize-for-your-use-case.md</code>。</li>
-</ol></section><section><h2>企業內部 AI 助理模板：快速開始</h2>
-<p>這份文件帶你從 clone 到「打 /ask 拿到答案」走完一遍。每一步都附上「實際指令 → 真實輸出 → 成功的話你會看到」。輸出都是本機真的跑出來貼上的。</p>
-<h3>前置需求</h3>
-<ul>
-<li><a href="https://docs.astral.sh/uv/">uv</a>（本專案用 uv 管理 Python 環境，會自動準備對應的 Python，pyproject.toml 要求 3.10+）</li>
-<li>Git</li>
-<li>可以使用終端機（會用到 <code>curl</code>；Windows 見下方補充）</li>
-<li>之後若要接真實 LLM，再準備 OpenAI 相容的 endpoint 與 API key。第一輪用內建 echo provider，不需要任何金鑰。</li>
-</ul>
-<p>環境差異只在「安裝 uv」這一步。裝好之後 <code>uv sync</code> / <code>uv run</code> 在 Ubuntu 與 Windows 完全相同，下面不再每條指令寫兩遍。Windows 的 <code>curl</code> 是 <code>Invoke-WebRequest</code> 的別名，請改用 <code>curl.exe ...</code> 或 <code>Invoke-RestMethod ...</code>；Ubuntu / macOS 用一般 <code>curl</code>。</p>
-<h3>這個 starter 在做什麼（一句話）</h3>
-<p>把 <code>sample_docs/</code> 裡的 .md / .txt 索引進一個 SQLite 檔（<code>assistant.db</code>），然後 POST /ask 時用「關鍵字計次」找出最相關的片段，組成 context 回給你。</p>
-<p>注意：<code>assistant.db</code> 沒有放進 repo（已被 <code>.gitignore</code> 忽略）。它是你第一步 ingest 時自己產生的，所以下面 ingest 那步如果沒跑，後面查詢一定是空的。</p>
-<h3>步驟 0：安裝 uv（一次就好）</h3>
-<p>Ubuntu / macOS：</p>
-<pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
-<p>Windows（PowerShell）：</p>
-<pre><code>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre>
-<p>裝完重開終端機，<code>uv --version</code> 印得出版本就 OK。</p>
-<h3>步驟 1：安裝</h3>
-<pre><code>git clone https://github.com/yazelin/company-ai-assistant-template.git
+<!doctype html>
+<html lang="zh-Hant-TW" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>企業內部 AI 助理模板｜快速了解</title>
+<meta name="description" content="用 SQLite + 關鍵字檢索做出可展示的內部文件 AI 助理，5 分鐘跑起來，再升級成語意檢索。完整逐步教學在實戰手冊。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#f59e0b; --brand-solid:#d97706;
+  --bg:#17120a; --bg2:#0c0905; --panel:rgba(255,255,255,.05); --border:rgba(255,255,255,.12);
+  --text:#f1eef9; --muted:#a79fbe; --code-bg:#0b0716; --code-text:#d8d2ec; --ok:#7fdca0;
+}
+html[data-theme="light"]{
+  --brand:#b45309; --brand-solid:#92400e;
+  --bg:#fdf8f0; --bg2:#f6ecda; --panel:#ffffff; --border:rgba(28,18,52,.12);
+  --text:#1c1630; --muted:#5b5470; --code-bg:#17132b; --code-text:#e7e2f6; --ok:#1f8a4c;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 600px at 82% -8%, color-mix(in srgb,var(--brand) 22%,transparent), transparent 60%),linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);font-family:'Noto Sans TC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.8;min-height:100vh}
+a{color:var(--brand);text-decoration:none}
+a:hover{filter:brightness(1.15)}
+.wrap{max-width:880px;margin:0 auto;padding:20px 22px 90px}
+.topbar{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--border);box-shadow:0 6px 18px -14px rgba(0,0,0,.5)}
+.topbar-inner{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.brand{font-weight:900;color:var(--text)}
+.toprow{display:flex;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;background:var(--panel);color:var(--text);cursor:pointer}
+.btn.primary{background:var(--brand-solid);border-color:transparent;color:#fff}
+.eyebrow{font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.22em;font-size:12px;color:var(--brand);font-weight:600}
+h1{font-size:clamp(32px,6vw,56px);line-height:1.08;margin:14px 0 16px;font-weight:900;letter-spacing:-.02em}
+.lead{font-size:clamp(18px,2.4vw,22px);color:var(--text);max-width:680px;margin:0 0 10px}
+.sub{color:var(--muted);max-width:680px;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.nav{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0 10px;margin-bottom:6px}
+.nav a{font-size:13px;border:1px solid var(--border);border-radius:999px;padding:6px 12px;background:var(--panel);color:var(--muted);font-weight:500}
+.nav a:hover{color:var(--brand);border-color:var(--brand)}
+section{border:1px solid var(--border);border-radius:20px;background:var(--panel);padding:26px 26px 28px;margin:16px 0;scroll-margin-top:74px}
+h2{font-size:26px;margin:0 0 8px;letter-spacing:-.01em}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brand);font-weight:600}
+p,li{color:var(--text)}
+.muted{color:var(--muted)}
+ul{padding-left:22px;margin:10px 0}
+li{margin:6px 0}
+pre{background:var(--code-bg);color:var(--code-text);border-radius:12px;padding:15px 16px;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;margin:10px 0}
+code{font-family:'JetBrains Mono',monospace}
+.step{font-size:13px;color:var(--muted);margin:14px 0 4px;font-weight:600}
+.ok{margin-top:12px;border-left:4px solid var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent);padding:10px 14px;border-radius:8px;color:var(--text)}
+.contrast{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+.contrast th,.contrast td{border:1px solid var(--border);padding:8px 11px;text-align:left;vertical-align:top}
+.contrast th{background:color-mix(in srgb,var(--brand) 16%,transparent);font-weight:700}
+.chapters{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:12px}
+.ch{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:color-mix(in srgb,var(--brand) 5%,transparent);color:var(--text);font-weight:600}
+.ch:hover{border-color:var(--brand)}
+.ch-n{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--brand);font-weight:700;min-width:22px}
+.get{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+.get-card{flex:1 1 240px;border:1px solid var(--border);border-radius:14px;padding:18px;background:color-mix(in srgb,var(--brand) 6%,transparent)}
+.get-card h3{margin:0 0 6px;font-size:17px}
+.footer{margin-top:36px;color:var(--muted);font-size:13px;text-align:center}
+.theme-toggle{font-family:'Noto Sans TC',sans-serif}
+@media(max-width:640px){.wrap{padding:16px 16px 70px}section{padding:20px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">← 企業 AI 助理</a>
+    <div class="toprow">
+      <a class="btn" href="https://github.com/yazelin/company-ai-assistant-template" target="_blank" rel="noopener">GitHub</a>
+      <button class="btn theme-toggle" id="themeBtn" type="button" aria-label="切換深淺色">淺色</button>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">內部文件 AI 助理入門 · 5 分鐘看懂</div>
+    <h1>讓 AI 答得出你公司的文件</h1>
+    <p class="lead">先用 SQLite + 關鍵字檢索做出可展示的內部文件助理，看懂<strong>檢索 → 組 context → 問 AI</strong>整條流程，再升級成語意檢索。</p>
+    <p class="sub">這頁讓你 5 分鐘知道這是什麼、能幹嘛、真的會動。要逐行、踩雷、部署、FAQ 的完整版，在實戰手冊裡。</p>
+    <div class="cta">
+      <a class="btn primary" href="#quickstart">5 分鐘跑起來 ↓</a>
+      <a class="btn" href="https://github.com/yazelin/company-ai-assistant-template" target="_blank" rel="noopener">看 GitHub 原始碼</a>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <a href="#what">這是什麼</a>
+    <a href="#outcomes">你會做出什麼</a>
+    <a href="#quickstart">5 分鐘跑起來</a>
+    <a href="#part2">Part 2 對照</a>
+    <a href="#chapters">完整章節</a>
+    <a href="#get">拿完整手冊</a>
+  </nav>
+
+  <section id="what">
+    <div class="tag">What</div>
+    <h2>這是什麼、解決什麼</h2>
+    <p>想做「問公司 SOP、查內部文件、給老闆看的 AI 助理 PoC」，常卡在「檢索怎麼接 AI？要不要先上向量資料庫？怎麼在不花大錢的前提下先驗證有沒有價值？」</p>
+    <p>這個範本把 <code>sample_docs/</code> 裡的 <code>.md</code> / <code>.txt</code> 索引進一個 SQLite 檔（<code>assistant.db</code>），<code>POST /ask</code> 時用<strong>關鍵字計次</strong>找出最相關的片段，組成 context 回給你。第一輪用內建 <code>echo</code> provider，不需要任何 API key，一眼就能讀完整條流程，剛好夠看懂「檢索 → context → AI」每一段。</p>
+  </section>
+
+  <section id="outcomes">
+    <div class="tag">Outcomes</div>
+    <h2>你會做出什麼</h2>
+    <ul>
+      <li>公司 SOP 問答 PoC。</li>
+      <li>內部文件搜尋與摘要。</li>
+      <li>給老闆看的 AI 助理展示。</li>
+      <li>看懂檢索 → 組 context → 問 AI 整條流程，不是示意圖。</li>
+      <li>後續升級向量資料庫 / RAG 的起點。</li>
+    </ul>
+  </section>
+
+  <section id="quickstart">
+    <div class="tag">Quick Win</div>
+    <h2>5 分鐘跑起來</h2>
+    <p class="muted">需要 <a href="https://docs.astral.sh/uv/" target="_blank" rel="noopener">uv</a> 與 Git。第一輪用內建 <code>echo</code> provider，不需要任何 API key。</p>
+    <div class="step"><strong>1.</strong> 取得並安裝</div>
+    <pre><code>git clone https://github.com/yazelin/company-ai-assistant-template.git
 cd company-ai-assistant-template
 uv sync
 cp .env.example .env</code></pre>
-<p><code>uv sync</code> 會依 pyproject.toml + uv.lock 自動建立 <code>.venv</code> 並裝好套件（毋須手動 venv/activate），<code>uv sync</code> / <code>uv run</code> 在 Ubuntu 與 Windows 完全相同。<code>.env.example</code> 預設就是 <code>AI_PROVIDER=echo</code>，複製過去即可，先不用改（Windows PowerShell 用 <code>copy .env.example .env</code>）。沒裝 uv 的話 <code>pip install .</code> 也能裝，但本教學以 uv 為主。</p>
-<h3>步驟 2：把文件索引進 SQLite（這一步會「生出」assistant.db）</h3>
-<pre><code>uv run python -m app.ingest sample_docs</code></pre>
-<p>真實輸出：</p>
-<pre><code>ingested sample_docs/overview.md</code></pre>
-<p>成功的話你會看到印出 <code>ingested ...</code> 一行，而且資料夾下多出一個 <code>assistant.db</code> 檔（約 12K）。跳過這步的話，後面查詢的 sources 會永遠是空的。</p>
-<h3>步驟 3：啟動服務</h3>
-<pre><code>uv run uvicorn app.main:app --reload --port 8000</code></pre>
-<p>成功的話終端機會停在 <code>Uvicorn running on http://127.0.0.1:8000</code> 與 <code>Application startup complete.</code>。請另開一個終端機做下面的測試。</p>
-<h3>步驟 4：健康檢查</h3>
-<pre><code>curl http://127.0.0.1:8000/health</code></pre>
-<p>真實輸出：</p>
-<pre><code>{"ok":true}</code></pre>
-<h3>步驟 5：問一個有命中的問題</h3>
-<pre><code>curl -X POST http://127.0.0.1:8000/ask \
+    <div class="step"><strong>2.</strong> 把文件索引進 SQLite（會生出 assistant.db）</div>
+    <pre><code>uv run python -m app.ingest sample_docs</code></pre>
+    <div class="step"><strong>3.</strong> 啟動服務，另開終端機問一個有命中的問題（最快的驗證）</div>
+    <pre><code>uv run uvicorn app.main:app --reload --port 8000
+
+curl -X POST http://127.0.0.1:8000/ask \
   -H "Content-Type: application/json" \
   -d '{"question":"What documents does this assistant index?"}'</code></pre>
-<p>真實輸出（為了好讀有換行，實際是一行）：</p>
-<pre><code>{
+    <div class="step"><strong>4.</strong> 真實輸出（為了好讀有換行；實際是一行）</div>
+    <pre><code>{
   "answer": "Echo answer. Retrieved context:\n[sample_docs/overview.md]\n# Company AI Assistant Template\n\nIndexes internal Markdown/text documents and answers with retrieved context.\n",
   "sources": [
     {
@@ -69,238 +142,72 @@ cp .env.example .env</code></pre>
     }
   ]
 }</code></pre>
-<p>成功的話 sources 陣列裡有東西，path 指到 <code>sample_docs/overview.md</code>。answer 開頭是 <code>Echo answer.</code>，因為現在是 echo provider，它只是把檢索到的 context 原樣回給你，還沒有真的呼叫 LLM。這是預期行為。</p>
-<h3>步驟 6：問一個沒命中的問題</h3>
-<pre><code>curl -X POST http://127.0.0.1:8000/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question":"zzzzzz nonexistent topic"}'</code></pre>
-<p>真實輸出：</p>
-<pre><code>{"answer":"Echo answer. Retrieved context:\nNo matching docs.","sources":[]}</code></pre>
-<p>成功的話 sources 是空陣列 []，answer 是 No matching docs.。代表檢索正常運作，只是這個問題在你目前的文件裡找不到關鍵字。</p>
-<h3>看看錯誤長什麼樣</h3>
-<p>不存在的路徑（404）：<code>curl http://127.0.0.1:8000/asdf</code></p>
-<pre><code>{"detail":"Not Found"}</code></pre>
-<p>打 /ask 但忘了帶 question 欄位（422 驗證錯誤）：</p>
-<pre><code>{"detail":[{"type":"missing","loc":["body","question"],"msg":"Field required","input":{}}]}</code></pre>
-<p>422 不是壞掉，是 request body 少了必填欄位。</p>
-<h3>整體 OK 的判斷標準</h3>
-<p>/health 回 {"ok":true}、有命中的問題回得到非空 sources、沒命中的問題回 "sources":[]，就代表這個 starter 在你機器上完整跑通了。</p></section><section><h2>企業內部 AI 助理模板：架構說明</h2>
-<h3>核心檔案</h3>
-<ul>
-<li>app/ingest.py：讀取 .md / .txt 並寫入 SQLite documents table</li>
-<li>app/search.py：最小 keyword retrieval baseline</li>
-<li>app/ai.py：把檢索片段組成 context，再交給 echo 或 HTTP LLM</li>
-<li>app/main.py：提供 /ask API</li>
-<li>sample_docs/：示範用內部文件</li>
-</ul>
-<h3>資料流</h3>
-<ol>
-<li>client 發出 POST /ask 請求。</li>
-<li>FastAPI 接收並用 Pydantic 驗證 question 欄位。</li>
-<li>search_docs 對 SQLite 做關鍵字計次檢索。</li>
-<li>ai.answer 把片段組成 context，交給 echo 或 HTTP LLM。</li>
-<li>回傳 answer 與 sources。</li>
-</ol>
-<h3>設計原則</h3>
-<ul>
-<li>先讓流程可跑，再做漂亮抽象。</li>
-<li>token 與 secrets 全部放在環境變數。</li>
-<li>每一層保持可以替換：入口、AI provider、資料來源、部署方式。</li>
-<li>範例程式刻意保持小，方便你看懂後改成自己的版本。</li>
-</ul></section><section><h2>企業內部 AI 助理模板：帶你走一遍</h2>
-<p>quickstart 讓服務跑起來。這份文件帶你做兩件真正有價值的事：把「你自己的文件」加進去並證明它被檢索到（含真實 before / after），以及從 echo 換成真實 HTTP LLM。下面的輸出都是本機真的跑出來貼上的。</p>
-<h3>第一部分：加一份自己的文件，看它被檢索到</h3>
-<p><strong>Before</strong>：目前只有 overview.md，先問一個沒有的主題：</p>
-<pre><code>curl -X POST http://127.0.0.1:8000/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question":"refund window thirty days"}'</code></pre>
-<p>真實輸出（sources 是空的）：</p>
-<pre><code>{"answer":"Echo answer. Retrieved context:\nNo matching docs.","sources":[]}</code></pre>
-<p><strong>動作</strong>：在 <code>sample_docs/</code> 新增 <code>refund-policy.md</code>：</p>
-<pre><code># Refund Policy
+    <div class="ok">成功長這樣：<code>sources</code> 陣列裡有東西、<code>path</code> 指到 <code>sample_docs/overview.md</code>，<code>answer</code> 開頭是 <strong>Echo answer.</strong>（echo provider 把檢索到的 context 原樣回給你，還沒真的呼叫 LLM，這是預期行為）。代表檢索整條都跑通了。</div>
+  </section>
 
-Customers may request a refund within a thirty day window after purchase.
-Approved refunds are returned to the original payment method.</code></pre>
-<p><strong>重新 ingest</strong>（改完文件一定要重跑，否則 SQLite 裡還是舊內容）：</p>
-<pre><code>uv run python -m app.ingest sample_docs</code></pre>
-<p>真實輸出（多了一行新檔案）：</p>
-<pre><code>ingested sample_docs/overview.md
-ingested sample_docs/refund-policy.md</code></pre>
-<p><strong>After</strong>：問同一個問題，真實輸出：</p>
-<pre><code>{
-  "answer": "Echo answer. Retrieved context:\n[sample_docs/refund-policy.md]\n# Refund Policy\n...",
-  "sources": [
-    {
-      "score": 5,
-      "path": "sample_docs/refund-policy.md",
-      "snippet": "# Refund Policy\n\nCustomers may request a refund within a thirty day window after purchase.\nApproved refunds are returned to the original payment method.\n"
-    }
-  ]
-}</code></pre>
-<p>同一個問題，sources 從 [] 變成命中 <code>sample_docs/refund-policy.md</code>，score 是 5。這就是「加文件 → 重新 ingest → 被檢索到」的完整證明。</p>
-<p>提醒：這個 starter 的檢索是「關鍵字 / 子字串計次」（看 app/search.py），不是語意檢索。中文「退費」不會自動對應英文 refund，同義詞也命中不到。這是個誠實的 keyword retrieval baseline。</p>
-<h3>第二部分：從 echo 換成真實 HTTP LLM</h3>
-<p>把 <code>.env</code> 的 <code>AI_PROVIDER</code> 從 <code>echo</code> 改成 <code>http</code>，並填入 <code>HTTP_LLM_API_KEY</code>：</p>
-<pre><code>AI_PROVIDER=http
-HTTP_LLM_ENDPOINT=https://api.openai.com/v1/chat/completions
-HTTP_LLM_API_KEY=sk-你的金鑰
-MODEL_NAME=gpt-4o-mini</code></pre>
-<p>app/ai.py 的邏輯：只要 AI_PROVIDER 不是 echo，就用 httpx 對 HTTP_LLM_ENDPOINT 發一個 OpenAI 相容的 chat completions 請求，把檢索片段塞進 prompt，回傳 choices[0].message.content。endpoint 不限 OpenAI，任何 OpenAI 相容介面都行（vLLM、Ollama 的相容層、Groq 等）。</p>
-<p>這一步需要你自己的金鑰才能真的拿到模型回應，所以這裡不貼造假的 LLM 回應。設好你的 HTTP_LLM_API_KEY 後，重啟 uvicorn 再打同一個 /ask，你會看到 answer 不再是 "Echo answer..."，而是模型根據 sources 寫出的自然語言回答；sources 欄位仍照舊回傳。金鑰沒設好或無效時 /ask 會回 500，錯誤訊息見踩雷清單。</p>
-<h3>動手練習：在 /ask 回應多加一個 source_count 欄位</h3>
-<p>目標：讓 /ask 除了 answer / sources，再回一個「命中幾份文件」的數字。這個練習我實際做過、驗證有效，下面是真實結果。</p>
-<p>改 app/main.py，在回傳 dict 多一個 source_count：</p>
-<pre><code>return {"answer":await answer(req.question,docs),"sources":docs,"source_count":len(docs)}</code></pre>
-<p>驗證真實輸出（有命中）：</p>
-<pre><code>{"answer":"Echo answer. Retrieved context:\n[sample_docs/refund-policy.md]\n...","sources":[{"score":5,"path":"sample_docs/refund-policy.md","snippet":"..."}],"source_count":1}</code></pre>
-<p>沒命中：</p>
-<pre><code>{"answer":"Echo answer. Retrieved context:\nNo matching docs.","sources":[],"source_count":0}</code></pre>
-<p>成功的話回應尾巴多了 "source_count":1（命中一份）和 "source_count":0（沒命中）。一個三個字的修改就讓 API 多回一個有用欄位，這就是這個 starter 刻意保持小的好處。</p>
-<h3>升級路徑</h3>
-<ul>
-<li>檢索：keyword 計次 → chunking → embedding 向量檢索 → hybrid。這是「baseline → RAG」真正的那段。</li>
-<li>中文 / 同義詞：keyword baseline 不處理，要在 ingest 做正規化或直接上 embedding。</li>
-<li>權限：目前任何人打 /ask 都能讀全部文件，正式版要加登入與依部門分群。</li>
-<li>資料治理：insert or replace 不處理刪除與版本，正式版要補。</li>
-</ul></section><section><h2>企業內部 AI 助理模板：部署筆記</h2>
-<h3>部署前檢查</h3>
-<ul>
-<li>本機流程已經跑通。</li>
-<li><code>.env</code> 沒有被 commit。</li>
-<li>README 的啟動指令與實際程式一致。</li>
-<li>/health 可用。</li>
-<li>外部 LLM 的 HTTP_LLM_API_KEY 已放在部署平台 secrets，而不是寫死在程式或 commit。</li>
-<li>部署目標上有跑過一次 ingest（assistant.db 是執行時產生的，不在 repo 裡）。</li>
-</ul>
-<h3>啟動指令</h3>
-<p>部署機先 <code>uv sync</code>（依 uv.lock 還原相同套件版本），再用 <code>uv run</code> 啟動。</p>
-<pre><code>uv sync
-uv run uvicorn app.main:app --host 0.0.0.0 --port 8000</code></pre>
-<h3>常見部署選項</h3>
-<ul>
-<li>Render / Railway / Fly.io：適合快速 demo。</li>
-<li>VPS + Docker / systemd：適合長期自管。</li>
-<li>公司內網主機：適合企業內部工具，但要處理網路與權限。</li>
-<li>NAS / edge gateway：適合工業或內部自動化場景。</li>
-</ul>
-<h3>部署後驗證</h3>
-<pre><code>curl http://127.0.0.1:8000/health</code></pre>
-<p>接著打一個有命中的 /ask 確認 sources 非空，不要只看服務有沒有啟動。</p>
-<h3>實務提醒</h3>
-<p>部署不是最後一步。正式使用前至少要補：log、錯誤告警、權限控管、備份策略、secret rotation，以及基本監控。</p></section><section><h2>企業內部 AI 助理模板：常見問題與踩雷清單</h2>
-<p>下面每一條都是這個 repo 真的會踩到的坑，錯誤訊息都是本機實際跑出來貼上的。</p>
-<h3>坑 1：忘了先 ingest，查詢永遠是空的</h3>
-<p>assistant.db 不在 repo 裡，是 ingest 時才產生的。沒跑 ingest 就查，sources 一定是空陣列，而且不會報錯（db.py 會自動建空表）。對一個從沒 ingest 過的 DB 檢索，真實結果是 <code>[]</code>。修法：先跑 <code>uv run python -m app.ingest sample_docs</code>。</p>
-<h3>坑 2：改了文件卻沒重新 ingest</h3>
-<p>/ask 讀的是 SQLite 不是直接讀檔。改了 sample_docs 沒重新 ingest，查到的還是舊資料。每次動 sample_docs 後都重跑 ingest（insert or replace，重跑安全）。</p>
-<h3>坑 3：DATABASE_URL 指到別的路徑</h3>
-<p>db.py 讀 DATABASE_URL（預設 assistant.db，相對於執行目錄）。ingest 和 uvicorn 在不同目錄或用了不同 .env，會操作到不同的 .db，於是「明明 ingest 成功，查還是空的」。固定在 repo 根目錄執行所有指令。</p>
-<h3>坑 4：AI_PROVIDER 設成 http 但金鑰沒填</h3>
-<p>送出 Authorization: Bearer（後面空白），httpx 直接擋下來，真實錯誤：</p>
-<pre><code>LocalProtocolError: Illegal header value b'Bearer '</code></pre>
-<p>/ask 回 500。修法：填上有效金鑰，或先改回 AI_PROVIDER=echo 排除 LLM 問題。</p>
-<h3>坑 5：金鑰 / endpoint 設錯（401 等）</h3>
-<p>金鑰無效或 endpoint 錯，會在 raise_for_status 丟出帶狀態碼的錯誤，真實錯誤：</p>
-<pre><code>HTTPStatusError: Client error '401 Unauthorized' for url 'https://api.openai.com/v1/chat/completions'</code></pre>
-<p>401 = 金鑰錯或過期；404 / 連線錯誤 = endpoint 填錯。</p>
-<h3>坑 6：request body 少欄位（422）</h3>
-<pre><code>{"detail":[{"type":"missing","loc":["body","question"],"msg":"Field required","input":{}}]}</code></pre>
-<p>這是正常的輸入驗證，帶上 question 即可。</p>
-<h3>坑 7：以為 echo 就是 AI</h3>
-<p>echo provider 不呼叫任何模型，只把檢索 context 原樣回傳（answer 開頭固定是 Echo answer.）。要真的讓模型回答，把 provider 換成 http。</p>
-<h3>坑 8：忘了先 uv sync，或沒在指令前加 uv run</h3>
-<p>本專案改用 uv，相依套件裝在 <code>uv sync</code> 自動建立的 <code>.venv</code> 裡。沒先 <code>uv sync</code> 就跑，或直接打 <code>uvicorn ...</code> / <code>python -m app.ingest ...</code>（少了 <code>uv run</code>），會用到系統 Python，常見錯誤是 <code>ModuleNotFoundError: No module named 'fastapi'</code> 或 <code>uvicorn: command not found</code>。修法：在 repo 根目錄先 <code>uv sync</code> 一次，之後所有指令都加 <code>uv run</code> 前綴。</p>
-<h3>坑 9：uv: command not found（uv 沒裝或沒重開終端機）</h3>
-<p>還沒裝 uv，或裝完沒重開終端機（installer 會把 uv 加進 PATH，需要新的 shell 才生效）。修法：Ubuntu / macOS 跑 <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code>；Windows（PowerShell）跑 <code>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</code>，裝完<strong>重開終端機</strong>再 <code>uv --version</code> 確認。</p></section><section><h2>企業內部 AI 助理模板：改成你的使用場景</h2>
-<h3>可延伸方向</h3>
-<ul>
-<li>改成部門知識庫：依文件路徑、部門、權限分群。</li>
-<li>升級檢索：加入 chunking、embedding、hybrid search。</li>
-<li>加登入：用公司 SSO 或 API key 控制 /ask。</li>
-<li>加評估集：收集常見問題，定期測回答品質。</li>
-</ul>
-<h3>改造原則</h3>
-<ul>
-<li>一次只改一個層次：先改資料來源，再改 UI，再改部署。</li>
-<li>先保留原本可跑的範例，另開 branch 做實驗。</li>
-<li>每加一個外部服務，就加一個健康檢查或 smoke test。</li>
-<li>先做 PoC，再決定要不要產品化。</li>
-</ul></section><section><h2>企業內部 AI 助理模板：工作坊與顧問協助</h2>
-<p>這個 repo 的教學內容會盡量公開，讓你可以自己照著做。如果你需要的不是「看文件」，而是希望有人陪你把它改成自己的情境，可以考慮工作坊或顧問協助。</p>
-<h3>適合找我協助的情況</h3>
-<ul>
-<li>你照 README 做但卡在金鑰、provider、部署或環境問題。</li>
-<li>你想把範例改成公司內部流程。</li>
-<li>你需要幫客戶或老闆做一個能展示的 PoC。</li>
-<li>你想知道這個 starter 上線前還缺哪些安全與維運設計。</li>
-</ul>
-<h3>聯絡方式</h3>
-<ul>
-<li>GitHub Pages：https://yazelin.github.io/company-ai-assistant-template/</li>
-<li>GitHub repo：https://github.com/yazelin/company-ai-assistant-template</li>
-<li>Email：yazelin@ching-tech.com</li>
-</ul></section><section><h2>關於作者</h2>
-<p>這個範本由 <strong>林亞澤（Yaze Lin）</strong> 維護 — 出身機電自動化系統整合，現在把同一套工程方法用在 AI 產品上。</p>
-<ul>
-<li>任職於 <strong>擎添工業 ChingTech</strong>（1984 年成立的機電自動化公司：PLC 程式、機械手臂、AGV 無人搬運、半導體封測／PCB／面板／光學產線整合）。</li>
-<li>技術筆記與更多範例：<a href="https://yazelin.github.io">yazelin.github.io</a> · GitHub <a href="https://github.com/yazelin">@yazelin</a></li>
-</ul>
-<h3>從範本到正式產品</h3>
-<p class="muted">你正在看的「知識庫 + 檢索」範本，正式版是 CTOS 的知識庫與產業 Agent 模組。</p>
-<p>如果你想看同樣的想法做成正式、上線中的產品：</p>
-<ul>
-<li><strong>CTOS</strong> — 企業 AI 工作平台：macOS 風格 Web 桌面、知識庫 RAG 檢索、產業專屬 Agent、LINE Bot 整合，資料留在台灣。<a href="https://ching-tech.com">ching-tech.com</a> · <a href="https://ching-tech.github.io">品牌站</a></li>
-<li><strong>CTOS-Lite / CT JINN</strong> — 把公司裝進 LINE 的個人版 AI 助理，加 LINE 即可試用：<a href="https://line.me/R/ti/p/@285fjkky">@285fjkky</a></li>
-<li><strong>Mori Desktop</strong> — 個人 AI 管家桌面應用（Tauri 2 + Rust + React）：<a href="https://github.com/yazelin/mori-desktop">github.com/yazelin/mori-desktop</a></li>
-<li><strong>AgentOS</strong> — 跨 CLI 的 agent 治理平台（開發中）</li>
-</ul>
-<p>想把這個範本落地成你公司的內部系統，或想上一堂從 0 到部署的課？來信 yazelin@ching-tech.com，或追蹤上面的連結。</p></section><section><h2>Part 2:升級成語意檢索(對照組)</h2>
-<p>前半段（<code>01</code>/<code>03</code>）你已經用<strong>關鍵字計次</strong>做出最小的文件助理——把查詢切詞、在每份文件數出現次數、排序。它誠實、好懂，但有個天花板：<strong>換句話說就找不到</strong>。這一段是課程後半：把同樣的檢索換成<strong>真正的語意檢索</strong>（embedding + 餘弦相似度），親眼看到差別。</p>
-<p>獨立的一課——先跑過前半段、撞到關鍵字的天花板，再回來看這段最有感。</p>
-<h3>先講結論：差在哪</h3>
-<table>
-<thead><tr><th>面向</th><th>關鍵字（<code>app/search.py</code>）</th><th>語意（<code>app/search_semantic.py</code>）</th></tr></thead>
-<tbody>
-<tr><td>比對方式</td><td>子字串出現次數</td><td>embedding 餘弦相似度</td></tr>
-<tr><td>換句話說</td><td>找不到（0 筆）</td><td>找得到</td></tr>
-<tr><td>介面</td><td><code>(query, limit) -&gt; [{score, path, snippet}]</code></td><td><strong>同簽章、同輸出形狀</strong></td></tr>
-<tr><td>相依</td><td>無第三方</td><td>fastembed（optional <code>semantic</code> extra）</td></tr>
-<tr><td>成本</td><td>幾乎 0</td><td>模型 ~118MB、查詢多幾十毫秒、需先 index</td></tr>
-</tbody>
-</table>
-<p>核心訊息：<strong>升級換掉的是「怎麼比對」，不是「你的資料或回答邏輯」</strong>——<code>search_semantic</code> 回傳形狀跟 <code>search_docs</code> 完全一樣，所以 <code>/ask</code> 與 AI 回答層（<code>app/ai.py</code>）一行都不用改。</p>
-<h3>步驟 1：裝 fastembed</h3>
-<pre><code>uv sync --extra semantic</code></pre>
-<p>成功的話 <code>uv run python -c "import fastembed; print(fastembed.__version__)"</code> 會印出 <code>0.8.x</code>。fastembed 是本地 ONNX embedding，<strong>不需要 API key</strong>，模型（<code>paraphrase-multilingual-MiniLM-L12-v2</code>，支援中文）第一次用會自動下載（~118MB）。</p>
-<h3>步驟 2：看 <code>app/search_semantic.py</code></h3>
-<p>兩個動作：先把文件 embed 存起來（<code>index_semantic</code>），查詢時 embed 問句、算餘弦取 top-k：</p>
-<pre><code>from fastembed import TextEmbedding
-import numpy as np
+  <section id="part2">
+    <div class="tag">Part 2 · 對照組</div>
+    <h2>關鍵字 baseline 撞到天花板後，改用語意檢索（fastembed）</h2>
+    <p>前半段你用<strong>關鍵字計次</strong>做出最小文件助理，它誠實、好懂，但有個天花板：<strong>換句話說就找不到</strong>。後半段把同樣的檢索換成<strong>真正的語意檢索</strong>（embedding + 餘弦相似度），親眼看到差別。</p>
+    <table class="contrast">
+      <tr><th>面向</th><th>關鍵字 baseline</th><th>語意（fastembed）</th></tr>
+      <tr><td>比對方式</td><td>子字串出現次數</td><td>embedding 餘弦相似度</td></tr>
+      <tr><td>換句話說（「我想把錢拿回來」）</td><td>找不到（0 筆）</td><td>仍命中 <code>refund.md</code></td></tr>
+      <tr><td>介面 / 輸出形狀</td><td><code>(query, limit) -&gt; [{score, path, snippet}]</code></td><td><strong>同簽章、同輸出形狀</strong></td></tr>
+      <tr><td>相依</td><td>無第三方</td><td>fastembed（本地 ONNX，模型 ~118MB）</td></tr>
+    </table>
+    <p>核心一句：<strong>升級換掉的是「怎麼比對」，不是「你的資料或回答邏輯」。</strong><code>search_semantic</code> 回傳形狀跟 <code>search_docs</code> 完全一樣，所以 <code>/ask</code> 與 AI 回答層一行都不用改。完整對照在 <a href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/08-semantic-search-upgrade.md" target="_blank" rel="noopener">docs/08</a>。</p>
+  </section>
 
-emb = TextEmbedding(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+  <section id="chapters">
+    <div class="tag">All Chapters</div>
+    <h2>完整章節（想一章一章讀完整版）</h2>
+    <p class="muted">這頁是快速了解；下面每一章都是完整內容，在 GitHub 上點開就能讀。</p>
+    <div class="chapters">
+      <a class="ch" href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/00-overview.md" target="_blank" rel="noopener"><span class="ch-n">00</span><span>總覽</span></a>
+      <a class="ch" href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/01-quickstart.md" target="_blank" rel="noopener"><span class="ch-n">01</span><span>快速開始</span></a>
+      <a class="ch" href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/02-architecture.md" target="_blank" rel="noopener"><span class="ch-n">02</span><span>架構</span></a>
+      <a class="ch" href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/03-step-by-step.md" target="_blank" rel="noopener"><span class="ch-n">03</span><span>逐步實作</span></a>
+      <a class="ch" href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/04-deployment.md" target="_blank" rel="noopener"><span class="ch-n">04</span><span>部署</span></a>
+      <a class="ch" href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/05-common-pitfalls.md" target="_blank" rel="noopener"><span class="ch-n">05</span><span>常見踩雷</span></a>
+      <a class="ch" href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/06-customize-for-your-use-case.md" target="_blank" rel="noopener"><span class="ch-n">06</span><span>改造成你的場景</span></a>
+      <a class="ch" href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/07-workshop-and-consulting.md" target="_blank" rel="noopener"><span class="ch-n">07</span><span>工作坊與顧問</span></a>
+      <a class="ch" href="https://github.com/yazelin/company-ai-assistant-template/blob/main/docs/08-semantic-search-upgrade.md" target="_blank" rel="noopener"><span class="ch-n">08</span><span>語意檢索升級（Part 2）</span></a>
+    </div>
+  </section>
 
-def cosine(a, b):
-    a = np.array(a); b = np.array(b)
-    return float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b)))</code></pre>
-<p>向量存在 SQLite 的 <code>embeddings</code> 表（JSON 浮點陣列）；<code>index_semantic</code> 對已索引的文件略過（冪等），所以重跑不重算。</p>
-<h3>步驟 3：跑對照測試</h3>
-<p>跟 mcp / linebot 那兩課不同：那兩課證明兩種寫法<strong>行為相同</strong>；這課的兩種檢索<strong>本來就該不一樣</strong>——這正是重點。所以測的是<strong>對照</strong>：</p>
-<pre><code>uv sync --extra semantic
-PYTHONPATH=. uv run python contrast_smoke_test_semantic.py</code></pre>
-<p>它用三份 sample 文件（退費 / 營業時間 / 出貨）斷言：</p>
-<ul>
-<li><strong>直接關鍵字查</strong>「退費」→ 關鍵字版與語意版<strong>都</strong>命中 <code>refund.md</code>（共識，語意版沒退化基本能力）。</li>
-<li><strong>改寫查</strong>「我想把錢拿回來」→ 關鍵字版 <strong>0 筆</strong>、語意版仍命中 <code>refund.md</code>（對照，升級的價值）。</li>
-</ul>
-<p>成功會看到 <code>OK: keyword-&gt;semantic contrast verified (keyword 0 / semantic finds it)</code>。這就是語意檢索真正贏關鍵字的地方：使用者不會剛好用你文件裡的詞。</p>
-<h3>步驟 4：在真 app 切換</h3>
-<p><code>/ask</code> 用 <code>SEARCH_BACKEND</code> 切換，預設 <code>keyword</code>、設 <code>semantic</code> 就改用語意版：</p>
-<pre><code>uv sync --extra semantic
-SEARCH_BACKEND=semantic uv run uvicorn app.main:app</code></pre>
-<p>下游 AI 回答完全不變——只是餵給它的「找到的文件」品質變好。</p>
-<h3>何時升級</h3>
-<ul>
-<li><strong>關鍵字</strong>（前半段）：文件少、查詢用詞固定、極簡或不想帶模型相依、要零成本。</li>
-<li><strong>語意</strong>（這一段）：使用者會換句話說、同義詞多、跨語言、FAQ 命中率要高——多帶一個本地模型，換到「懂意思」的檢索。</li>
-</ul>
-<p>下一步若要再進階：chunking（長文切段再 embed）、hybrid（關鍵字 + 語意合併）、或文件量大時換向量索引（如 sqlite-vec）。本課把最小可動的語意檢索做到能跑、能對照，先把概念站穩。</p></section></main><section id="contact"><h2>需要手把手協助？</h2><p>公開文件適合照著跑；工作坊與顧問適合處理你的真實環境、debug、部署、權限與客製化改造。</p><p><a class="btn primary" href="https://yazelin.github.io/company-ai-assistant-template/#waitlist">留下 email / 收到開課通知</a></p></section><p class="footer">© Yaze Lin. 教學內容公開於 GitHub，歡迎 fork、star、照著做。</p></div></body></html>
+  <section id="get">
+    <div class="tag">Next</div>
+    <h2>要完整逐步？</h2>
+    <p>這頁是快速了解。<strong>逐行讀懂、換成真實 LLM、加自己的文件、踩雷清單、部署、FAQ</strong>都在實戰手冊（PDF）裡。</p>
+    <div class="get">
+      <div class="get-card">
+        <h3>取得實戰手冊（免費）</h3>
+        <p class="muted">留個 Email，我把完整 PDF 寄給你。</p>
+        <p><a class="btn primary" href="index.html#waitlist">下載手冊 →</a></p>
+      </div>
+      <div class="get-card">
+        <h3>看原始碼 / 自己改</h3>
+        <p class="muted">程式碼公開，直接拿去改、拿去用。</p>
+        <p><a class="btn" href="https://github.com/yazelin/company-ai-assistant-template" target="_blank" rel="noopener">GitHub repo →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <p class="footer">© 擎添工業 ChingTech · 林亞澤（Yaze Lin）· 內容可自由用於學習</p>
+</div>
+
+<script>
+(function(){
+  var KEY='company-theme', root=document.documentElement, btn=document.getElementById('themeBtn');
+  function apply(t){ root.setAttribute('data-theme', t); btn.textContent = (t==='dark' ? '淺色' : '深色'); }
+  var saved = localStorage.getItem(KEY);
+  apply(saved || 'light');
+  btn.addEventListener('click', function(){
+    var next = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+    localStorage.setItem(KEY, next); apply(next);
+  });
+})();
+</script>
+</body>
+</html>
